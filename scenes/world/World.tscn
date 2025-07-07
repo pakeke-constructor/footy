@@ -1,0 +1,27 @@
+[gd_scene load_steps=5 format=3 uid="uid://c4r7etcwy3mie"]
+
+[ext_resource type="Script" uid="uid://tehm2n46sp2a" path="res://scenes/world/world.gd" id="1_5qbjp"]
+[ext_resource type="Script" uid="uid://bcbk6lo6uo5r5" path="res://scenes/world/debug.gd" id="2_1oml7"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_qjesc"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_5qbjp"]
+
+[node name="World" type="Node3D"]
+script = ExtResource("1_5qbjp")
+
+[node name="Floor" type="StaticBody3D" parent="."]
+transform = Transform3D(20, 0, 0, 0, 1, 0, 0, 0, 20, 0, 0, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Floor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = SubResource("BoxMesh_qjesc")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+shape = SubResource("BoxShape3D_5qbjp")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.976672, -0.129829, 0.171043, 0, 0.79653, 0.604599, -0.214735, -0.590495, 0.777949, 0, 7.36435, 0)
+
+[node name="Debugger" type="Node" parent="."]
+script = ExtResource("2_1oml7")
