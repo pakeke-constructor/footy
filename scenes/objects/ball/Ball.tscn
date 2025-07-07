@@ -1,10 +1,13 @@
-[gd_scene load_steps=3 format=3 uid="uid://dd0ceu3vsti2t"]
+[gd_scene load_steps=4 format=3 uid="uid://dd0ceu3vsti2t"]
+
+[ext_resource type="Script" uid="uid://vrjlse41qsux" path="res://scenes/objects/ball/ball.gd" id="1_ijbg5"]
 
 [sub_resource type="SphereMesh" id="SphereMesh_7haiw"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_ijbg5"]
 
-[node name="Ball" type="StaticBody3D"]
+[node name="Ball" type="RigidBody3D"]
+script = ExtResource("1_ijbg5")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 mesh = SubResource("SphereMesh_7haiw")

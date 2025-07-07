@@ -23,10 +23,10 @@ func _physics_process(delta):
         last_position = global_position
         last_velocity = linear_velocity
         
-        sync_physics_state(global_position, linear_velocity, angular_velocity)
+        sync_physics_state.rpc(global_position, linear_velocity, angular_velocity)
 
 
-@rpc("authority", "unreliable")
+@rpc("authority", "call_remote", "unreliable_ordered", Util.UNORDERED_CHANNEL)
 func sync_physics_state(pos: Vector3, lin_vel: Vector3, ang_vel: Vector3):
     if multiplayer.is_server():
         return
@@ -36,4 +36,3 @@ func sync_physics_state(pos: Vector3, lin_vel: Vector3, ang_vel: Vector3):
     tween.parallel().tween_property(self, "global_position", pos, sync_interval)
     linear_velocity = lin_vel
     angular_velocity = ang_vel
-

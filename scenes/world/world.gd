@@ -17,7 +17,7 @@ func _ready():
 
 
 func _spawn_physics_objects():
-    for i in range(0):
+    for i in range(5):
         var obj = ball_scene.instantiate()
         obj.position = Vector3(randf_range(-10, 10), 5, randf_range(-10, 10))
         obj.name = "PhysicsObject_" + str(i)
@@ -74,7 +74,7 @@ func host_game():
     if OS.is_debug_build():
         var camera = Camera3D.new()
         add_child(camera)
-        camera.transform.origin = Vector3(0, 20, 0)
+        camera.transform.origin = Vector3(0, 30, 0)
         camera.look_at(Vector3(0, 0, 0))
         camera.current = true
         Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
