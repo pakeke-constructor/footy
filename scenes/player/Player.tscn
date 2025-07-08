@@ -1,18 +1,25 @@
-[gd_scene load_steps=4 format=3 uid="uid://cf1gm4p05fgdf"]
+[gd_scene load_steps=6 format=3 uid="uid://cf1gm4p05fgdf"]
 
 [ext_resource type="Script" uid="uid://dxihab7dsjjib" path="res://scenes/player/player.gd" id="1_wr5hl"]
+[ext_resource type="Script" uid="uid://pwrbqvwmh7gm" path="res://scenes/player/camera.gd" id="2_gfjak"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_gfjak"]
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gfjak"]
+albedo_color = Color(0.801414, 0.752535, 0.229286, 1)
+
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_4kuee"]
+resource_local_to_scene = true
 
 [node name="Player" type="CharacterBody3D"]
 script = ExtResource("1_wr5hl")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 mesh = SubResource("CapsuleMesh_gfjak")
+surface_material_override/0 = SubResource("StandardMaterial3D_gfjak")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+[node name="CapsuleShape" type="CollisionShape3D" parent="."]
 shape = SubResource("CapsuleShape3D_4kuee")
 
 [node name="Camera3D" type="Camera3D" parent="."]
+script = ExtResource("2_gfjak")

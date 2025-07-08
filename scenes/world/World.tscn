@@ -32,7 +32,6 @@ script = ExtResource("1_5qbjp")
 transform = Transform3D(60, 0, 0, 0, 1, 0, 0, 0, 40, 0, 0, 0)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Floor"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 mesh = SubResource("BoxMesh_qjesc")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
@@ -42,7 +41,6 @@ shape = SubResource("BoxShape3D_5qbjp")
 transform = Transform3D(1, 0, 0, 0, 20, 0, 0, 0, 40, 29.601, 9.3883, 0.0886364)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="WallBack"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 mesh = SubResource("BoxMesh_qjesc")
 surface_material_override/0 = SubResource("StandardMaterial3D_1oml7")
 
@@ -53,7 +51,6 @@ shape = SubResource("BoxShape3D_5qbjp")
 transform = Transform3D(1, 0, 0, 0, 20, 0, 0, 0, 40, -30.0603, 9.3883, 0.0886364)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="WallFront"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 mesh = SubResource("BoxMesh_qjesc")
 surface_material_override/0 = SubResource("StandardMaterial3D_1oml7")
 

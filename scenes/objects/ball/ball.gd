@@ -33,6 +33,6 @@ func sync_physics_state(pos: Vector3, lin_vel: Vector3, ang_vel: Vector3):
     
     # Smooth interpolation for clients
     var tween = create_tween()
-    tween.parallel().tween_property(self, "global_position", pos, sync_interval)
+    tween.tween_property(self, "global_position", pos, sync_interval)
     linear_velocity = lin_vel
     angular_velocity = ang_vel

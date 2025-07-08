@@ -19,6 +19,12 @@ func _ready():
         set_process_input(false)
         $Camera3D.current = false
 
+        var shape : CapsuleShape3D = $CapsuleShape.shape
+        shape.radius *= 1.9
+        shape.height *= 1.9
+        # Collision size should be slightly bigger on server.
+        # This ensures that we dont get lagback/jitters.
+
 
 func _physics_process(delta):
     if not is_multiplayer_authority():
