@@ -23,8 +23,9 @@ IDEA: Don't move on client.
 Send input immediately to server with current-time; 
 
 server will apply the movement 0.1 seconds after the player moved (100ms) 
+This is assuming that our players will have a RTT of LESS THAN 100ms.
 
-This means that if you have 50ms or lower, your inputs will look the same.
+For all players that have 50ms or lower, inputs will look the same.
 If you have >50ms, your input will be delayed though, and you'll lag.
 
 VERY IMPORTANT:
