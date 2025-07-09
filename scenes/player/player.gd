@@ -15,15 +15,11 @@ func _ready():
         Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
         $Camera3D.current = true
     else:
+        # Else, its on server!
         set_physics_process(false)
         set_process_input(false)
         $Camera3D.current = false
-
-        var shape : CapsuleShape3D = $CapsuleShape.shape
-        shape.radius *= 1.9
-        shape.height *= 1.9
-        # Collision size should be slightly bigger on server.
-        # This ensures that we dont get lagback/jitters.
+        $ServerCollider.server_collide.connect(_server_collide)
 
 
 func _physics_process(delta):
@@ -70,7 +66,34 @@ func _input(event):
         if event.button_index == 1:
             pass # kick ball, use tool, do something?
 
-            
+
+
+func _server_collide(body: RigidBody3D):
+    var diff = body.global_position - self.global_position
+    diff = diff.normalized()
+
+    var restitution = 1.0
+
+    var body_v: Vector3 = body.linear_velocity
+    var self_v: Vector3 = self.velocity
+    
+    var relative_velocity = body_v - self_v
+    var velocity_along_normal = relative_velocity.dot(diff)
+
+    if velocity_along_normal > 0:
+        # Don't resolve if velocities are separating
+        return
+    
+    DebugDraw3D.draw_line(self.global_position, self.global_position + relative_velocity, Color(1, 1, 0))
+
+    # Calculate impulse scalar
+    var impulse_scalar = -(1 + restitution) * velocity_along_normal
+    
+    var impulse = impulse_scalar * diff
+    body.linear_velocity += impulse
+
+
+
 
 
 
