@@ -1,5 +1,5 @@
-
 extends Camera3D
+
 
 # Camera settings
 @export var target: Node3D  # The object to follow (your car/player)
@@ -9,28 +9,28 @@ extends Camera3D
 @export var rotation_speed: float = 3.0
 @export var mouse_sensitivity: float = 0.005
 
-# Camera rotation
-var camera_rotation_x: float = 0.0
-var camera_rotation_y: float = 0.0
-
 # Collision detection
-var space_state: PhysicsDirectSpaceState3D
+@onready var space_state := get_world_3d().direct_space_state
+
 
 func _ready():
 	# Capture mouse for camera control
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-	
-	# Get physics space for collision detection
-	space_state = get_world_3d().direct_space_state
+
 
 func _input(event):
 	# Handle mouse movement for camera rotation
 	if event is InputEventMouseMotion:
-		camera_rotation_y -= event.relative.x * mouse_sensitivity
-		camera_rotation_x -= event.relative.y * mouse_sensitivity
+		global_rotation.x -= event.relative.y * mouse_sensitivity
+		global_rotation.y -= event.relative.x * mouse_sensitivity
+		
+		# HACK: This is somehow needed to prevent camera going weird?
+		# TODO: Not have the camera as a child of the player, I think
+		# - Atirut
+		global_rotation.z = 0
 		
 		# Clamp vertical rotation to prevent flipping
-		camera_rotation_x = clamp(camera_rotation_x, -PI/3, PI/6)
+		global_rotation.x = clamp(global_rotation.x, -PI/3, PI/6)
 	
 
 func _process(delta):
@@ -45,21 +45,17 @@ func _process(delta):
 	
 	# Smoothly move camera to the final position
 	global_position = global_position.lerp(final_position, camera_speed * delta)
-	
-	# Make camera look at the target
-	look_at(target.global_position + Vector3.UP * 1.0, Vector3.UP)
+
 
 func calculate_camera_position() -> Vector3:
-	# Create rotation based on mouse input
-	var transform_basis = Transform3D()
-	transform_basis = transform_basis.rotated(Vector3.UP, camera_rotation_y)
-	transform_basis = transform_basis.rotated(Vector3.RIGHT, camera_rotation_x)
-	
-	# Calculate offset from target
-	var offset = Vector3(0, follow_height, follow_distance)
-	offset = transform_basis * offset
+	var offset := Vector3(
+		sin(global_rotation.y) * follow_distance,
+		follow_height,
+		cos(global_rotation.y) * follow_distance
+	)
 	
 	return target.global_position + offset
+
 
 func handle_collision(target_pos: Vector3, desired_pos: Vector3) -> Vector3:
 	# Cast a ray from target to desired camera position
