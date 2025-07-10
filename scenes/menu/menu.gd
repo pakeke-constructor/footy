@@ -39,15 +39,9 @@ func _ready():
 
 func _on_host_pressed():
     NetworkManager.host_game()
-    var main = world_scene.instantiate()
-    get_tree().root.add_child(main)
-    Util.await_ready(main)
-    queue_free()
+    get_tree().change_scene_to_packed(world_scene)
 
 
 func _on_join_pressed():
     NetworkManager.join_game(ip_input.text if ip_input.text != "" else "127.0.0.1")
-    var main = world_scene.instantiate()
-    get_tree().root.add_child(main)
-    Util.await_ready(main)
-    queue_free()
+    get_tree().change_scene_to_packed(world_scene)
