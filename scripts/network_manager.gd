@@ -98,5 +98,5 @@ func _debug(message: String) -> void:
 			print("[SERVER]: %s" % message)
 		Mode.CLIENT:
 			print("[CLIENT]: %s" % message)
-		_:
+		Mode.OFFLINE:
 			print("[OFFLINE]: %s" % message)
