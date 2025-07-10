@@ -9,16 +9,25 @@ signal player_disconnected(id: int)
 ## The server has disconnected.
 signal server_disconnected()
 
-enum NetworkMode {
+enum Mode {
 	SERVER,
 	CLIENT,
 	OFFLINE
 }
 
+## ENet channels for packet types.
+## We want to use different channels for unreliable, reliable, and unordered
+## since we don't want blocking.
+enum Channel {
+	UNRELIABLE = 1,
+	RELIABLE = 2,
+	UNORDERED = 3
+}
+
 const PORT := 8080
 
 ## The current network mode.
-var mode := NetworkMode.OFFLINE
+var mode := Mode.OFFLINE
 
 
 func _ready() -> void:
@@ -35,7 +44,7 @@ func host_game() -> void:
 		push_error("Failed to create server on port %d" % PORT)
 		return
 	multiplayer.multiplayer_peer = peer
-	mode = NetworkMode.SERVER
+	mode = Mode.SERVER
 	_debug("Server started on port %d" % PORT)
 
 	# Debug camera for server for debugging in headfull mode.
@@ -58,7 +67,7 @@ func join_game(ip: String) -> void:
 
 
 func _on_connected_to_server() -> void:
-	mode = NetworkMode.CLIENT
+	mode = Mode.CLIENT
 	_debug("Connected to server")
 
 
@@ -78,16 +87,16 @@ func _on_peer_disconnected(id: int) -> void:
 
 func _on_server_disconnected() -> void:
 	_debug("Server disconnected")
-	mode = NetworkMode.OFFLINE
+	mode = Mode.OFFLINE
 	multiplayer.multiplayer_peer = null
 	server_disconnected.emit()
 
 
 func _debug(message: String) -> void:
 	match mode:
-		NetworkMode.SERVER:
+		Mode.SERVER:
 			print("[SERVER]: %s" % message)
-		NetworkMode.CLIENT:
+		Mode.CLIENT:
 			print("[CLIENT]: %s" % message)
 		_:
 			print("[OFFLINE]: %s" % message)
