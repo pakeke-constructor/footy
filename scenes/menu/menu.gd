@@ -9,31 +9,15 @@ extends Control
 @onready var join_button = $VBoxContainer/JoinButton
 
 
-var is_client := false
-var is_server := false
-
-
-func parse_args():
-    var args := OS.get_cmdline_args()
-    
-    for arg in args:
-        if arg == "--server":
-            is_server = true
-        elif arg == "--client":
-            is_client = true
-
-
 func _ready():
     host_button.pressed.connect(_on_host_pressed)
     join_button.pressed.connect(_on_join_pressed)
 
-    parse_args()
-
     await get_tree().root.ready
 
-    if is_server:
+    if DisplayServer.get_name() == "headless" or "--server" in OS.get_cmdline_args():
         _on_host_pressed()
-    elif is_client:
+    elif "--client" in OS.get_cmdline_args():
         _on_join_pressed()
 
 
