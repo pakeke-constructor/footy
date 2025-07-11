@@ -10,8 +10,8 @@ var physics_objects = {}
 
 
 func _ready():
-    multiplayer.peer_connected.connect(_on_peer_connected)
-    multiplayer.peer_disconnected.connect(_on_peer_disconnected)
+    NetworkManager.player_connected.connect(_on_player_connected)
+    NetworkManager.player_disconnected.connect(_on_player_disconnected)
 
     _spawn_physics_objects()
 
@@ -25,7 +25,7 @@ func _spawn_physics_objects():
         physics_objects[obj.name] = obj
 
 
-func _on_peer_disconnected(id: int):
+func _on_player_disconnected(id: int):
     if multiplayer.is_server():
         Util.debug("Player disconnected: ", id)
         if players.has(id):
@@ -34,7 +34,7 @@ func _on_peer_disconnected(id: int):
 
 
 
-func _on_peer_connected(id: int):
+func _on_player_connected(id: int):
     if multiplayer.is_server():
         m_spawn_player.rpc(id)
 
@@ -57,38 +57,3 @@ func m_spawn_player(id: int):
 
     players[id] = player
     add_child(player)
-
-
-
-
-
-func host_game():
-    Util.await_ready(self)
-    var peer = ENetMultiplayerPeer.new()
-    peer.create_server(8080, 4)
-    multiplayer.multiplayer_peer = peer
-    get_window().title = "SERVER"
-
-    # create debug camera.
-    # (Nice way to detect desyncs)
-    if OS.is_debug_build():
-        var camera = Camera3D.new()
-        add_child(camera)
-        camera.transform.origin = Vector3(0, 30, 0)
-        camera.look_at(Vector3(0, 0, 0))
-        camera.current = true
-        Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-
-    Util.debug("Server started")
-
-
-
-func join_game(ip: String):
-    Util.await_ready(self)
-    var peer = ENetMultiplayerPeer.new()
-    peer.create_client(ip, 8080)
-    multiplayer.multiplayer_peer = peer
-
-    get_window().title = "CLIENT"
-
-    Util.debug("Connecting to server...")

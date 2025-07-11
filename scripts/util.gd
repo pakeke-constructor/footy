@@ -25,15 +25,3 @@ static func debug(a: Variant = null, b: Variant = null, c: Variant = null, d: Va
         prefix = "(client) "
 
     print(prefix, " ".join(lis))
-
-
-
-
-# ENet channels for packet types.
-# we wanna use different channels for unreliable, reliable, and unordered;
-# since we dont want blocking.
-const UNRELIABLE_CHANNEL = 1
-const RELIABLE_CHANNEL = 2
-const UNORDERED_CHANNEL = 3
-
-
