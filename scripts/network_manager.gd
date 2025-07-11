@@ -29,6 +29,13 @@ const PORT := 8080
 ## The current network mode.
 var mode := Mode.OFFLINE
 
+## Players connected to the server.
+# TODO: Consider using a dataclass instead of a Dictionary for each player, and define the content.
+var players: Dictionary[int, Dictionary] = {}
+
+## Local player data to send to the server for announcing the player.
+var player_data: Dictionary = {}
+
 
 func _ready() -> void:
 	multiplayer.connected_to_server.connect(_on_connected_to_server)
@@ -69,6 +76,7 @@ func join_game(ip: String) -> void:
 func _on_connected_to_server() -> void:
 	mode = Mode.CLIENT
 	_debug("Connected to server")
+	_broadcast_player.rpc_id(1, multiplayer.get_unique_id(), var_to_str(player_data))
 
 
 func _on_connection_failed() -> void:
@@ -77,12 +85,13 @@ func _on_connection_failed() -> void:
 
 func _on_peer_connected(id: int) -> void:
 	_debug("Peer connected: %d" % id)
-	player_connected.emit(id)
+	# player_connected.emit(id)
 
 
 func _on_peer_disconnected(id: int) -> void:
 	_debug("Peer disconnected: %d" % id)
 	player_disconnected.emit(id)
+	players.erase(id)
 
 
 func _on_server_disconnected() -> void:
@@ -90,6 +99,7 @@ func _on_server_disconnected() -> void:
 	mode = Mode.OFFLINE
 	multiplayer.multiplayer_peer = null
 	server_disconnected.emit()
+	players.clear()
 
 
 func _debug(message: String) -> void:
@@ -100,3 +110,16 @@ func _debug(message: String) -> void:
 			print("[CLIENT]: %s" % message)
 		Mode.OFFLINE:
 			print("[OFFLINE]: %s" % message)
+
+
+@rpc("any_peer", "call_remote", "reliable")
+func _broadcast_player(id: int, player_data_str: String) -> void:
+	_debug("Broadcasting player %d data to all peers" % id)
+	_register_player.rpc(id, player_data_str)
+
+
+@rpc("authority", "call_local", "reliable")
+func _register_player(id: int, player_data_str: String) -> void:
+	_debug("Registering player %d with data: %s" % [id, player_data_str])
+	players[id] = str_to_var(player_data_str)
+	player_connected.emit(id)
