@@ -6,6 +6,7 @@ extends CharacterBody3D
 
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 var player_id: int
+var camera: OrbitCamera
 
 func _ready():
     player_id = get_multiplayer_authority()
@@ -13,12 +14,14 @@ func _ready():
     if is_multiplayer_authority():
         # Capture mouse for local player
         Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-        $Camera3D.current = true
+        camera = OrbitCamera.new()
+        camera.target = self
+        camera.current = true
+        get_tree().current_scene.add_child(camera) # TODO: Clean up camera when done
     else:
         # Else, its on server!
         set_physics_process(false)
         set_process_input(false)
-        $Camera3D.current = false
         $ServerCollider.server_collide.connect(_server_collide)
 
 
@@ -35,8 +38,12 @@ func _physics_process(delta):
         velocity.y = jump_velocity
     
     # Handle movement
-    var input_dir = Input.get_vector("move_left", "move_right", "move_forward", "move_back")
-    var direction := input_dir.rotated(-$Camera3D.global_rotation.y)
+    var input_dir := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
+    var direction := input_dir.rotated(-camera.global_rotation.y)
+
+    if input_dir.length() > 0:
+        var target_rotation = Vector3(0, atan2(direction.x, direction.y), 0)
+        global_rotation.y = lerp_angle(global_rotation.y, target_rotation.y, delta * 5.0)
     
     if direction:
         velocity.x = direction.x * speed
@@ -57,14 +64,10 @@ const MOUSE_SENSITIVITY = 0.001
 
 func _input(event):
     if event is InputEventMouseMotion:
-        var camera = $Camera3D
-        rotate_y(-event.relative.x * MOUSE_SENSITIVITY)
-        camera.rotate_x(-event.relative.y * MOUSE_SENSITIVITY)
-        camera.rotation.x = clamp(camera.rotation.x, -PI/2, PI/2)
-
+        pass
     elif event is InputEventMouseButton:
         if event.button_index == 1:
-            pass # kick ball, use tool, do something?
+            pass # TODO: kick ball, use tool, do something?
 
 
 
