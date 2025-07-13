@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://cf1gm4p05fgdf"]
+[gd_scene load_steps=9 format=3 uid="uid://cf1gm4p05fgdf"]
 
 [ext_resource type="Script" uid="uid://dxihab7dsjjib" path="res://scenes/player/player.gd" id="1_wr5hl"]
 [ext_resource type="Script" uid="uid://pwrbqvwmh7gm" path="res://scenes/player/camera.gd" id="2_gfjak"]
@@ -15,6 +15,8 @@ resource_local_to_scene = true
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_gfjak"]
 radius = 0.7
 height = 2.2
+
+[sub_resource type="BoxMesh" id="BoxMesh_4kuee"]
 
 [node name="Player" type="CharacterBody3D"]
 script = ExtResource("1_wr5hl")
@@ -37,3 +39,7 @@ script = ExtResource("3_4kuee")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ServerCollider"]
 shape = SubResource("CapsuleShape3D_gfjak")
 debug_color = Color(0.815977, 0.095162, 0.328048, 0.42)
+
+[node name="EyesPlaceholder" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.671635, 0, 0, 0, 0.278678, 0, 0, 0, 0.579446, 0, 0.419904, 0.254255)
+mesh = SubResource("BoxMesh_4kuee")
