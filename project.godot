@@ -15,6 +15,10 @@ run/main_scene="uid://y7lx5320rot2"
 config/features=PackedStringArray("4.4", "Forward Plus")
 config/icon="res://icon.svg"
 
+[autoload]
+
+NetworkManager="*res://scripts/network_manager.gd"
+
 [debug_draw_3d]
 
 settings/addon_root_folder="res://addons/debug_draw_3d"
