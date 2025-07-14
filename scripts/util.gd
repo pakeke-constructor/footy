@@ -15,6 +15,12 @@ const UNRELIABLE_ORDERED = 2
 
 
 
+const CLIENT_DELAY = 0.16
+# CLIENT_DELAY is the artificial delay between player-input and server-reaction
+# This delay assumes a RTT of 0.16 seconds; in other words, 80ms ping.
+
+
+
 # Waits until a node is ready.
 # NOTE: this will implicitly turn the function into a coroutine.
 # useful to use in on-ready

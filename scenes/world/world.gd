@@ -39,15 +39,6 @@ func _on_player_connected(id: int):
 		m_spawn_player.rpc(id)
 
 
-# 
-# @rpc(
-#     "authority"|"any_peer", 
-#     "call_remote"|"call_local", 
-#     "unreliable"|"reliable"|"unreliable_ordered", 
-#     channel=0
-# )
-#
-
 @rpc("authority", "call_local", "reliable")
 func m_spawn_player(id: int):
 	var player = player_scene.instantiate()

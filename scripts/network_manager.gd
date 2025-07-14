@@ -4,12 +4,31 @@ extends Node
 
 
 
+# 
+# @rpc(
+#     "authority"|"any_peer", 
+#     "call_remote"|"call_local", 
+#     "unreliable"|"reliable"|"unreliable_ordered", 
+#     channel=0
+# )
+#
+
+
+
+
+
 ## A player connected to the server.
 signal player_connected(id: int)
 ## A player disconnected from the server.
 signal player_disconnected(id: int)
 ## The server has disconnected.
 signal server_disconnected()
+
+
+## A tick has occured serverside. tickrate is generally constant, like 30 or 60 TPS.
+signal server_tick(tick_number: int, time)
+
+
 
 enum Mode {
 	SERVER,
@@ -43,6 +62,16 @@ var time_buffer: Array[float] = []
 
 
 
+# server-variables:
+const TICKRATE = 30.0
+const TICK_STEP := 1.0 / TICKRATE
+# Server tickrate; X ticks per second.
+
+var tick_number : int = 0
+var time_since_tick = 0.0
+
+
+
 func _ready() -> void:
 	for i in range(TIME_BUFFER_SIZE):
 		time_buffer.append(0.0)
@@ -69,7 +98,7 @@ func host_game() -> void:
 		var camera = Camera3D.new()
 		add_child(camera)
 		camera.position = Vector3(0, 30, 0)
-		camera.look_at(Vector3.ZERO)
+		camera.look_at(Vector3.ZERO + Vector3(0.01, 0.01, 0.01))
 		camera.current = true
 
 
@@ -121,14 +150,36 @@ func _debug(message: String) -> void:
 			print("[OFFLINE]: %s" % message)
 
 
+
 func _process(dt: float) -> void:
+	# Increment world-time.
 	time += dt
+	if OS.is_debug_build():
+		# debugging -> 
+		if tick_number % 10 == 0:
+			if mode == Mode.CLIENT:
+				_debug(str((", ").join(time_buffer)))
+			_debug(str(time))
+
+	match mode:
+		Mode.CLIENT:
+			for i in range(time_buffer.size()):
+				time_buffer[i] += dt
+		Mode.SERVER:
+			if time_since_tick > TICK_STEP:
+				server_tick.emit(tick_number)
+				tick_number += 1
+				# min, since if the server is lagging, we dont want it to get cooked.
+				time_since_tick = 0.0
+				_tick.rpc(tick_number, time)
+			else:
+				time_since_tick += dt;
 
 
 @rpc("any_peer", "call_remote", "reliable")
 func _broadcast_player(id: int, player_data_str: String) -> void:
 	_debug("Broadcasting player %d data to all peers" % id)
-	# FIXME: this is extremely fragile, we are trusting client to send arbitrary JSON.
+	# TODO: FIXME: this is extremely fragile, we are trusting client to send arbitrary JSON.
 	# This should to be fixed at some point, If a bad actor sends malformed json it could crash server in the future
 	_register_player.rpc(id, player_data_str)
 
@@ -142,13 +193,13 @@ func _register_player(id: int, player_data_str: String) -> void:
 
 
 @rpc("authority", "call_remote", "unreliable_ordered", Util.UNRELIABLE_ORDERED)
-func _set_time(server_time: float) -> void:
+func _tick(tck_number: int, server_time: float) -> void:
 	var peer_id = multiplayer.get_remote_sender_id()
 	var peer : ENetPacketPeer = multiplayer.multiplayer_peer.get_peer(peer_id)
-	var rtt = peer.get_statistic(peer.LAST_ROUND_TRIP_TIME)
+	var rtt = peer.get_statistic(peer.PEER_ROUND_TRIP_TIME) / 1000.0
 	# ^^^ this is the LAST SEEN RTT for a reliable packet.
 
-	var now_time = server_time + rtt
+	var now_time = server_time + (rtt / 2.0)
 	time_buffer.push_back(now_time)
 	time_buffer.pop_front()
 
@@ -157,4 +208,8 @@ func _set_time(server_time: float) -> void:
 		sum += x
 	time = sum / time_buffer.size()
 
+	tick_number = tck_number
 
+
+func get_time():
+	return time
