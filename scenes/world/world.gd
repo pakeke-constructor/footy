@@ -10,33 +10,33 @@ var physics_objects = {}
 
 
 func _ready():
-    NetworkManager.player_connected.connect(_on_player_connected)
-    NetworkManager.player_disconnected.connect(_on_player_disconnected)
+	NetworkManager.player_connected.connect(_on_player_connected)
+	NetworkManager.player_disconnected.connect(_on_player_disconnected)
 
-    _spawn_physics_objects()
+	_spawn_physics_objects()
 
 
 func _spawn_physics_objects():
-    for i in range(5):
-        var obj = ball_scene.instantiate()
-        obj.position = Vector3(randf_range(-10, 10), 5, randf_range(-10, 10))
-        obj.name = "PhysicsObject_" + str(i)
-        add_child(obj)
-        physics_objects[obj.name] = obj
+	for i in range(5):
+		var obj = ball_scene.instantiate()
+		obj.position = Vector3(randf_range(-10, 10), 5, randf_range(-10, 10))
+		obj.name = "PhysicsObject_" + str(i)
+		add_child(obj)
+		physics_objects[obj.name] = obj
 
 
 func _on_player_disconnected(id: int):
-    if multiplayer.is_server():
-        Util.debug("Player disconnected: ", id)
-        if players.has(id):
-            players[id].queue_free()
-            players.erase(id)
+	if multiplayer.is_server():
+		Util.debug("Player disconnected: ", id)
+		if players.has(id):
+			players[id].queue_free()
+			players.erase(id)
 
 
 
 func _on_player_connected(id: int):
-    if multiplayer.is_server():
-        m_spawn_player.rpc(id)
+	if multiplayer.is_server():
+		m_spawn_player.rpc(id)
 
 
 # 
@@ -50,10 +50,10 @@ func _on_player_connected(id: int):
 
 @rpc("authority", "call_local", "reliable")
 func m_spawn_player(id: int):
-    var player = player_scene.instantiate()
-    player.name = "Player_" + str(id)
-    player.set_multiplayer_authority(id)
-    Util.debug("player spawning!", id)
+	var player = player_scene.instantiate()
+	player.name = "Player_" + str(id)
+	player.set_multiplayer_authority(id)
+	Util.debug("player spawning!", id)
 
-    players[id] = player
-    add_child(player)
+	players[id] = player
+	add_child(player)

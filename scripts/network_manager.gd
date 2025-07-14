@@ -1,5 +1,7 @@
+
 extends Node
 ## Manages network connections for the game.
+
 
 
 ## A player connected to the server.
@@ -15,14 +17,6 @@ enum Mode {
 	OFFLINE
 }
 
-## ENet channels for packet types.
-## We want to use different channels for unreliable, reliable, and unordered
-## since we don't want blocking.
-enum Channel {
-	UNRELIABLE = 1,
-	RELIABLE = 2,
-	UNORDERED = 3
-}
 
 const PORT := 8080
 
@@ -33,11 +27,26 @@ var mode := Mode.OFFLINE
 # TODO: Consider using a dataclass instead of a Dictionary for each player, and define the content.
 var players: Dictionary[int, Dictionary] = {}
 
-## Local player data to send to the server for announcing the player.
+## Clientside player data to send to the server for announcing the player.
 var player_data: Dictionary = {}
 
 
+## World-time.
+# The server keeps track of the current-time, and replicates it to client-side.
+# Ideally, the server-time and client-time should be exactly equal across computers.
+var time: float = 0.0
+
+# A list of most recent times that are sent from the server.
+# this smoothes out variance and network hitches
+const TIME_BUFFER_SIZE := 10;
+var time_buffer: Array[float] = []
+
+
+
 func _ready() -> void:
+	for i in range(TIME_BUFFER_SIZE):
+		time_buffer.append(0.0)
+
 	multiplayer.connected_to_server.connect(_on_connected_to_server)
 	multiplayer.connection_failed.connect(_on_connection_failed)
 	multiplayer.peer_connected.connect(_on_peer_connected)
@@ -107,14 +116,20 @@ func _debug(message: String) -> void:
 		Mode.SERVER:
 			print("[SERVER]: %s" % message)
 		Mode.CLIENT:
-			print("[CLIENT]: %s" % message)
+			print("(cl): %s" % message) # different makes it more readable
 		Mode.OFFLINE:
 			print("[OFFLINE]: %s" % message)
+
+
+func _process(dt: float) -> void:
+	time += dt
 
 
 @rpc("any_peer", "call_remote", "reliable")
 func _broadcast_player(id: int, player_data_str: String) -> void:
 	_debug("Broadcasting player %d data to all peers" % id)
+	# FIXME: this is extremely fragile, we are trusting client to send arbitrary JSON.
+	# This should to be fixed at some point, If a bad actor sends malformed json it could crash server in the future
 	_register_player.rpc(id, player_data_str)
 
 
@@ -123,3 +138,23 @@ func _register_player(id: int, player_data_str: String) -> void:
 	_debug("Registering player %d with data: %s" % [id, player_data_str])
 	players[id] = str_to_var(player_data_str)
 	player_connected.emit(id)
+
+
+
+@rpc("authority", "call_remote", "unreliable_ordered", Util.UNRELIABLE_ORDERED)
+func _set_time(server_time: float) -> void:
+	var peer_id = multiplayer.get_remote_sender_id()
+	var peer : ENetPacketPeer = multiplayer.multiplayer_peer.get_peer(peer_id)
+	var rtt = peer.get_statistic(peer.LAST_ROUND_TRIP_TIME)
+	# ^^^ this is the LAST SEEN RTT for a reliable packet.
+
+	var now_time = server_time + rtt
+	time_buffer.push_back(now_time)
+	time_buffer.pop_front()
+
+	var sum = 0
+	for x in time_buffer:
+		sum += x
+	time = sum / time_buffer.size()
+
+

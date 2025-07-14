@@ -26,7 +26,7 @@ func _physics_process(delta):
         sync_physics_state.rpc(global_position, linear_velocity, angular_velocity)
 
 
-@rpc("authority", "call_remote", "unreliable_ordered", NetworkManager.Channel.UNORDERED)
+@rpc("authority", "call_remote", "unreliable_ordered", Util.UNRELIABLE_ORDERED)
 func sync_physics_state(pos: Vector3, lin_vel: Vector3, ang_vel: Vector3):
     if multiplayer.is_server():
         return

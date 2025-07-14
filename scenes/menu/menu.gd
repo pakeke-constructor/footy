@@ -10,22 +10,22 @@ extends Control
 
 
 func _ready():
-    host_button.pressed.connect(_on_host_pressed)
-    join_button.pressed.connect(_on_join_pressed)
+	host_button.pressed.connect(_on_host_pressed)
+	join_button.pressed.connect(_on_join_pressed)
 
-    await get_tree().root.ready
+	await get_tree().root.ready
 
-    if DisplayServer.get_name() == "headless" or "--server" in OS.get_cmdline_args():
-        _on_host_pressed()
-    elif "--client" in OS.get_cmdline_args():
-        _on_join_pressed()
+	if DisplayServer.get_name() == "headless" or "--server" in OS.get_cmdline_args():
+		_on_host_pressed()
+	elif "--client" in OS.get_cmdline_args():
+		_on_join_pressed()
 
 
 func _on_host_pressed():
-    NetworkManager.host_game()
-    get_tree().change_scene_to_packed(world_scene)
+	NetworkManager.host_game()
+	get_tree().change_scene_to_packed(world_scene)
 
 
 func _on_join_pressed():
-    NetworkManager.join_game(ip_input.text if ip_input.text != "" else "127.0.0.1")
-    get_tree().change_scene_to_packed(world_scene)
+	NetworkManager.join_game(ip_input.text if ip_input.text != "" else "127.0.0.1")
+	get_tree().change_scene_to_packed(world_scene)
