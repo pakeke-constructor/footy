@@ -49,6 +49,7 @@ Ideal publisher:
 - Must FEEL good. Clientside prediction, snappy game-feel, non-janky controls
 - Excellent collision physics required
 - Needs good "theming" and "identity". More on this below.
+- Needs good playability with friends, party-style?
 
 
 
@@ -130,11 +131,11 @@ Giant chicken that waddles around the pitch randomly
 
 
 ## Tools / Weapons 
-Players can also pick up weapons/tools:
-Trumpets that make toot sounds, and blast stuff away
-Blocky gun, that shoots out giant physics blocks
-Throwable banana that makes a huge explosion
-Baseball bat, makes a [bonk sound](https://youtu.be/ZXK427oXjn8?feature=shared) and stops the object's movement (including players)
-Banana-peel, causes players to slip up and flip in a comical way [sound fx](https://youtu.be/kKPAt6DoLyA?feature=shared)
-Candy cane, when a player is bonked with the candy cane, the two players swap teams.
+Players can also pick up weapons/tools:  
+Trumpets that make toot sounds, and blast stuff away  
+Blocky gun, that shoots out giant physics blocks  
+Throwable banana that makes a huge explosion  
+Baseball bat, makes a [bonk sound](https://youtu.be/ZXK427oXjn8?feature=shared) and stops the object's movement (including players)  
+Banana-peel, causes players to slip up and flip in a comical way [sound fx](https://youtu.be/kKPAt6DoLyA?feature=shared)  
+Candy cane, when a player is bonked with the candy cane, the two players swap teams.  
 
