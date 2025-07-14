@@ -154,12 +154,6 @@ func _debug(message: String) -> void:
 func _process(dt: float) -> void:
 	# Increment world-time.
 	time += dt
-	if OS.is_debug_build():
-		# debugging -> 
-		if tick_number % 10 == 0:
-			if mode == Mode.CLIENT:
-				_debug(str((", ").join(time_buffer)))
-			_debug(str(time))
 
 	match mode:
 		Mode.CLIENT:
@@ -197,8 +191,7 @@ func _tick(tck_number: int, server_time: float) -> void:
 	var peer_id = multiplayer.get_remote_sender_id()
 	var peer : ENetPacketPeer = multiplayer.multiplayer_peer.get_peer(peer_id)
 	var rtt = peer.get_statistic(peer.PEER_ROUND_TRIP_TIME) / 1000.0
-	# ^^^ this is the LAST SEEN RTT for a reliable packet.
-
+	# ^^^ *AVERAGE* RTT for a reliable packet.
 	var now_time = server_time + (rtt / 2.0)
 	time_buffer.push_back(now_time)
 	time_buffer.pop_front()
