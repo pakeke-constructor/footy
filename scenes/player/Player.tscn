@@ -1,7 +1,6 @@
 [gd_scene load_steps=8 format=3 uid="uid://cf1gm4p05fgdf"]
 
 [ext_resource type="Script" uid="uid://dxihab7dsjjib" path="res://scenes/player/player.gd" id="1_wr5hl"]
-[ext_resource type="Script" uid="uid://pwrbqvwmh7gm" path="res://scenes/player/camera.gd" id="2_gfjak"]
 [ext_resource type="Script" uid="uid://186dtvticvj3" path="res://scenes/player/server_collider.gd" id="3_4kuee"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_gfjak"]
@@ -16,6 +15,8 @@ resource_local_to_scene = true
 radius = 0.7
 height = 2.2
 
+[sub_resource type="BoxMesh" id="BoxMesh_4kuee"]
+
 [node name="Player" type="CharacterBody3D"]
 script = ExtResource("1_wr5hl")
 
@@ -26,14 +27,13 @@ surface_material_override/0 = SubResource("StandardMaterial3D_gfjak")
 [node name="CapsuleShape" type="CollisionShape3D" parent="."]
 shape = SubResource("CapsuleShape3D_4kuee")
 
-[node name="Camera3D" type="Camera3D" parent="." node_paths=PackedStringArray("target")]
-transform = Transform3D(1, 0, 0, 0, 0.942309, 0.334744, 0, -0.334744, 0.942309, 0, 2.00972, 3.27716)
-script = ExtResource("2_gfjak")
-target = NodePath("..")
-
 [node name="ServerCollider" type="Area3D" parent="."]
 script = ExtResource("3_4kuee")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ServerCollider"]
 shape = SubResource("CapsuleShape3D_gfjak")
 debug_color = Color(0.815977, 0.095162, 0.328048, 0.42)
+
+[node name="EyesPlaceholder" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.671635, 0, 0, 0, 0.278678, 0, 0, 0, 0.579446, 0, 0.419904, 0.254255)
+mesh = SubResource("BoxMesh_4kuee")
