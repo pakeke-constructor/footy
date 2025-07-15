@@ -4,9 +4,9 @@ extends Control
 
 
 @onready var world_scene = preload("res://scenes/world/World.tscn")
-@onready var ip_input = $VBoxContainer/IPInput
-@onready var host_button = $VBoxContainer/HostButton
-@onready var join_button = $VBoxContainer/JoinButton
+@onready var host_button: Button = %HostButton
+@onready var ip_input: LineEdit = %IPInput
+@onready var join_button: Button = %JoinButton
 
 
 func _ready():
