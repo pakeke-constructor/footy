@@ -61,6 +61,11 @@ const TIME_BUFFER_SIZE := 10;
 var time_buffer: Array[float] = []
 
 
+const CLIENT_DELAY = 0.16
+# CLIENT_DELAY is the artificial delay between player-input and server-reaction
+# This delay assumes a RTT of 0.16 seconds; in other words, 80ms ping.
+
+
 
 # server-variables:
 const TICKRATE = 30.0
