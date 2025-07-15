@@ -16,6 +16,17 @@ extends Node
 
 
 
+## VVV THIS IS THE MOST IMPORTANT VARIABLE IN THE ENTIRE CODEBASE.
+const CLIENT_RTT = 0.16
+# CLIENT_RTT is the artificial delay between player-input and server-reaction
+# This delay assumes a RTT of 0.16 seconds; in other words, 80ms ping.
+
+# if a player has lower latency, our systems will insert an "artificial" delay in, 
+# so that the game feels consistent.
+
+
+
+
 
 ## A player connected to the server.
 signal player_connected(id: int)
@@ -59,11 +70,6 @@ var time: float = 0.0
 # this smoothes out variance and network hitches
 const TIME_BUFFER_SIZE := 10;
 var time_buffer: Array[float] = []
-
-
-const CLIENT_DELAY = 0.16
-# CLIENT_DELAY is the artificial delay between player-input and server-reaction
-# This delay assumes a RTT of 0.16 seconds; in other words, 80ms ping.
 
 
 

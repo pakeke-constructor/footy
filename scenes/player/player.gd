@@ -8,6 +8,8 @@ var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 var player_id: int
 var camera: OrbitCamera
 
+
+
 func _ready():
 	player_id = get_multiplayer_authority()
 
@@ -19,7 +21,7 @@ func _ready():
 		camera.current = true
 		get_tree().current_scene.add_child(camera) # TODO: Clean up camera when done
 	else:
-		# Else, its on server!
+		# Else, its on server, OR on another 
 		set_physics_process(false)
 		set_process_input(false)
 		$ServerCollider.server_collide.connect(_server_collide)
@@ -94,11 +96,6 @@ func _server_collide(body: RigidBody3D):
 	
 	var impulse = impulse_scalar * diff
 	body.linear_velocity += impulse
-
-
-
-
-
 
 
 
