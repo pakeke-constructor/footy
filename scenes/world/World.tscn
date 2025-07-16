@@ -1,7 +1,8 @@
-[gd_scene load_steps=9 format=3 uid="uid://c4r7etcwy3mie"]
+[gd_scene load_steps=10 format=3 uid="uid://c4r7etcwy3mie"]
 
 [ext_resource type="Script" uid="uid://tehm2n46sp2a" path="res://scenes/world/world.gd" id="1_5qbjp"]
 [ext_resource type="Script" uid="uid://bcbk6lo6uo5r5" path="res://scenes/world/debug.gd" id="2_1oml7"]
+[ext_resource type="PackedScene" uid="uid://brj6bimngicos" path="res://scenes/objects/goal/goal.tscn" id="3_6eebf"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_qjesc"]
 
@@ -87,3 +88,6 @@ script = ExtResource("2_1oml7")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_1oml7")
+
+[node name="Goal" parent="." instance=ExtResource("3_6eebf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 0, 0)
