@@ -16,6 +16,7 @@ func _ready():
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 		camera = OrbitCamera.new()
 		camera.target = self
+		camera.follow_offset = Vector3(0, 1.75, 0)
 		camera.current = true
 		get_tree().current_scene.add_child(camera) # TODO: Clean up camera when done
 	else:
