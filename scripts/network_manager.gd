@@ -208,14 +208,6 @@ func get_sender_rtt():
 	return get_rtt(peer_id)
 
 
-# gets the amount of delay we SHOULD have,
-# assuming we buffer the client's input to make it consistent.
-func get_sender_input_delay():
-	var rtt = get_sender_rtt()
-	
-
-
-
 @rpc("authority", "call_remote", "unreliable_ordered", Util.UNRELIABLE_ORDERED)
 func _tick(tck_number: int, server_time: float) -> void:
 	var rtt = get_sender_rtt()

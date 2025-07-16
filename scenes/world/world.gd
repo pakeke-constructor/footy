@@ -15,6 +15,9 @@ func _ready():
 
 	_spawn_physics_objects()
 
+	set_physics_process(multiplayer.is_server())
+
+
 
 func _spawn_physics_objects():
 	for i in range(5):
