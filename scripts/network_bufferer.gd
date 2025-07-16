@@ -33,8 +33,7 @@ func add_from_server_interp(send_time: float, execute_func: Callable) -> void:
 	add(send_time + (NetworkManager.CLIENT_RTT/2.0) - NetworkManager.TICK_STEP, execute_func)
 
 func add_from_server(send_time: float, execute_func: Callable) -> void:
-	# we subtract `TICK_STEP` because the way our 
-	add(send_time + (NetworkManager.CLIENT_RTT/2.0) - NetworkManager.TICK_STEP, execute_func)
+	add(send_time + (NetworkManager.CLIENT_RTT/2.0), execute_func)
 
 
 

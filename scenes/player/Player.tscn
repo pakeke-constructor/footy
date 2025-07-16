@@ -19,6 +19,8 @@ height = 2.2
 
 [node name="Player" type="CharacterBody3D"]
 script = ExtResource("1_wr5hl")
+speed = null
+jump_velocity = null
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 mesh = SubResource("CapsuleMesh_gfjak")

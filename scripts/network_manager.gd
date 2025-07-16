@@ -196,13 +196,29 @@ func _register_player(id: int, player_data_str: String) -> void:
 	player_connected.emit(id)
 
 
-
-@rpc("authority", "call_remote", "unreliable_ordered", Util.UNRELIABLE_ORDERED)
-func _tick(tck_number: int, server_time: float) -> void:
-	var peer_id = multiplayer.get_remote_sender_id()
+func get_rtt(peer_id: int):
 	var peer : ENetPacketPeer = multiplayer.multiplayer_peer.get_peer(peer_id)
 	var rtt = peer.get_statistic(peer.PEER_ROUND_TRIP_TIME) / 1000.0
 	# ^^^ *AVERAGE* RTT for a reliable packet.
+	return rtt
+
+
+func get_sender_rtt():
+	var peer_id = multiplayer.get_remote_sender_id()
+	return get_rtt(peer_id)
+
+
+# gets the amount of delay we SHOULD have,
+# assuming we buffer the client's input to make it consistent.
+func get_sender_input_delay():
+	var rtt = get_sender_rtt()
+	
+
+
+
+@rpc("authority", "call_remote", "unreliable_ordered", Util.UNRELIABLE_ORDERED)
+func _tick(tck_number: int, server_time: float) -> void:
+	var rtt = get_sender_rtt()
 	var now_time = server_time + (rtt / 2.0)
 	time_buffer.push_back(now_time)
 	time_buffer.pop_front()

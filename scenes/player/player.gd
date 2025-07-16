@@ -8,6 +8,12 @@ var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 var player_id: int
 var camera: OrbitCamera
 
+var move_direction := Vector2(0,0)
+
+
+var move_buffer := NetworkBufferer.new()
+var action_buffer := NetworkBufferer.new()
+
 
 
 func _ready():
@@ -27,19 +33,26 @@ func _ready():
 		$ServerCollider.server_collide.connect(_server_collide)
 
 
-func _physics_process(delta):
-	if not is_multiplayer_authority():
-		return
-	
-	# Handle gravity
+
+func _physics_process_server(delta: float) -> void:
 	if not is_on_floor():
 		velocity.y -= gravity * delta
 	
-	# Handle jump
+
+func _physics_process_client(delta: float) -> void:
 	if Input.is_action_just_pressed("ui_accept") and is_on_floor():
 		velocity.y = jump_velocity
 	
-	# Handle movement
+
+func _process_client(delta: float):
+
+
+func _physics_process(delta):
+	if multiplayer.is_server():
+		_physics_process_server(delta)
+	else:
+		_physics_process_client(delta)
+	
 	var input_dir := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
 	var direction := input_dir.rotated(-camera.global_rotation.y)
 
@@ -100,11 +113,13 @@ func _server_collide(body: RigidBody3D):
 
 
 @rpc("any_peer", "unreliable")
-func sync_player_state(pos: Vector3, vel: Vector3):
-	if is_multiplayer_authority():
-		return
-	
+func sync_move_direction(move_dir: Vector3, send_time: float):
 	# Smooth interpolation for non-authority players
-	var tween = create_tween()
-	tween.tween_property(self, "global_position", pos, 0.1)
-	velocity = vel
+	move_direction = move_dir
+
+
+@rpc("any_peer", "unreliable")
+func jump():
+	pass
+
+
