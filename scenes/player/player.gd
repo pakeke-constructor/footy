@@ -1,15 +1,27 @@
 
 extends CharacterBody3D
 
-@export var speed = 5.0
+@export var speed = 300.0
 @export var jump_velocity = 4.5
 
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 var player_id: int
 var camera: OrbitCamera
 
+var direction := Vector2(0,0)
+
+var bufferer: Bufferer
+
+
+
+
 func _ready():
 	player_id = get_multiplayer_authority()
+
+	bufferer = Bufferer.new(self)
+	self.add_child(bufferer)
+
+	Util.disable_physics_clientside(self)
 
 	if is_multiplayer_authority():
 		# Capture mouse for local player
@@ -19,44 +31,59 @@ func _ready():
 		camera.current = true
 		get_tree().current_scene.add_child(camera) # TODO: Clean up camera when done
 	else:
-		# Else, its on server!
-		set_physics_process(false)
+		# Else, its on server, OR on another 
 		set_process_input(false)
 		$ServerCollider.server_collide.connect(_server_collide)
 
 
-func _physics_process(delta):
-	if not is_multiplayer_authority():
-		return
-	
-	# Handle gravity
+
+func _physics_process_server(delta: float) -> void:
 	if not is_on_floor():
 		velocity.y -= gravity * delta
 	
-	# Handle jump
-	if Input.is_action_just_pressed("ui_accept") and is_on_floor():
-		velocity.y = jump_velocity
-	
-	# Handle movement
-	var input_dir := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
-	var direction := input_dir.rotated(-camera.global_rotation.y)
-
-	if input_dir.length() > 0:
-		var target_rotation = Vector3(0, atan2(direction.x, direction.y), 0)
-		global_rotation.y = lerp_angle(global_rotation.y, target_rotation.y, delta * 5.0)
-	
 	if direction:
-		velocity.x = direction.x * speed
-		velocity.z = direction.y * speed
+		velocity.x = direction.x * speed * delta
+		velocity.z = direction.y * speed * delta
 	else:
-		velocity.x = move_toward(velocity.x, 0, speed)
-		velocity.z = move_toward(velocity.z, 0, speed)
+		velocity.x = move_toward(velocity.x, 0, speed * delta)
+		velocity.z = move_toward(velocity.z, 0, speed * delta)
 	
 	move_and_slide()
-	
-	# Sync position to other players
-	sync_player_state.rpc(global_position, velocity)
 
+	# TODO: in future could do simple delta-compression:
+	# if global_position.distance_to(last_position) > EPSILON:
+	var time = NetworkManager.get_time()
+	sync_physics_state.rpc(
+		self.global_position, self.velocity, self.direction,
+		time
+	)
+
+
+func _physics_process_client(_delta: float) -> void:
+	if direction.length() > 0:
+		global_rotation.y = atan2(direction.x, direction.y)
+
+	if not is_multiplayer_authority():
+		# we dont wanna control other player's clients
+		return
+
+	var time = NetworkManager.get_time()
+	if Input.is_action_just_pressed("ui_accept"):
+		sync_jump.rpc(time)
+
+	var input_dir := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
+	var move_dir := input_dir.rotated(-camera.global_rotation.y)
+	sync_move_direction.rpc(move_dir, time)
+	
+
+
+
+
+func _physics_process(delta):
+	if multiplayer.is_server():
+		_physics_process_server(delta)
+	else:
+		_physics_process_client(delta)
 
 
 const MOUSE_SENSITIVITY = 0.001
@@ -99,15 +126,30 @@ func _server_collide(body: RigidBody3D):
 
 
 
+# server -> client
+@rpc("any_peer", "call_remote", "unreliable_ordered", Util.UNRELIABLE_ORDERED)
+func sync_physics_state(pos: Vector3, lin_vel: Vector3, move_dir: Vector2, send_time: float):
+	bufferer.lerp_from_server(send_time, "global_position", pos)
+	bufferer.lerp_from_server(send_time, "velocity", lin_vel)
+	bufferer.do_from_server(send_time, func():
+		# dont lerp direction, just set it directly.
+		self.direction = move_dir
+	)
 
 
 
-@rpc("any_peer", "unreliable")
-func sync_player_state(pos: Vector3, vel: Vector3):
-	if is_multiplayer_authority():
-		return
-	
+# client -> server
+@rpc("authority", "call_remote", "unreliable", Util.UNRELIABLE)
+func sync_move_direction(move_dir: Vector2, send_time: float):
 	# Smooth interpolation for non-authority players
-	var tween = create_tween()
-	tween.tween_property(self, "global_position", pos, 0.1)
-	velocity = vel
+	bufferer.do_from_client(send_time, func():
+		direction = move_dir
+		)
+
+# client -> server
+@rpc("authority", "call_remote", "reliable")
+func sync_jump(send_time: float):
+	if multiplayer.is_server() and is_on_floor():
+		bufferer.do_from_client(send_time, func():
+			velocity.y = jump_velocity		
+			)

@@ -16,6 +16,17 @@ extends Node
 
 
 
+## VVV THIS IS THE MOST IMPORTANT VARIABLE IN THE ENTIRE CODEBASE.
+const CLIENT_RTT = 0.16
+# CLIENT_RTT is the artificial delay between player-input and server-reaction
+# This delay assumes a RTT of 0.16 seconds; in other words, 80ms ping.
+
+# if a player has lower latency, our systems will insert an "artificial" delay in, 
+# so that the game feels consistent.
+
+
+
+
 
 ## A player connected to the server.
 signal player_connected(id: int)
@@ -59,11 +70,6 @@ var time: float = 0.0
 # this smoothes out variance and network hitches
 const TIME_BUFFER_SIZE := 10;
 var time_buffer: Array[float] = []
-
-
-const CLIENT_DELAY = 0.16
-# CLIENT_DELAY is the artificial delay between player-input and server-reaction
-# This delay assumes a RTT of 0.16 seconds; in other words, 80ms ping.
 
 
 
@@ -190,13 +196,21 @@ func _register_player(id: int, player_data_str: String) -> void:
 	player_connected.emit(id)
 
 
-
-@rpc("authority", "call_remote", "unreliable_ordered", Util.UNRELIABLE_ORDERED)
-func _tick(tck_number: int, server_time: float) -> void:
-	var peer_id = multiplayer.get_remote_sender_id()
+func get_rtt(peer_id: int):
 	var peer : ENetPacketPeer = multiplayer.multiplayer_peer.get_peer(peer_id)
 	var rtt = peer.get_statistic(peer.PEER_ROUND_TRIP_TIME) / 1000.0
 	# ^^^ *AVERAGE* RTT for a reliable packet.
+	return rtt
+
+
+func get_sender_rtt():
+	var peer_id = multiplayer.get_remote_sender_id()
+	return get_rtt(peer_id)
+
+
+@rpc("authority", "call_remote", "unreliable_ordered", Util.UNRELIABLE_ORDERED)
+func _tick(tck_number: int, server_time: float) -> void:
+	var rtt = get_sender_rtt()
 	var now_time = server_time + (rtt / 2.0)
 	time_buffer.push_back(now_time)
 	time_buffer.pop_front()
