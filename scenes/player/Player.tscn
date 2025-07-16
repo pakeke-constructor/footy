@@ -21,13 +21,16 @@ height = 2.2
 script = ExtResource("1_wr5hl")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 mesh = SubResource("CapsuleMesh_gfjak")
 surface_material_override/0 = SubResource("StandardMaterial3D_gfjak")
 
 [node name="CapsuleShape" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("CapsuleShape3D_4kuee")
 
 [node name="ServerCollider" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 script = ExtResource("3_4kuee")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ServerCollider"]
@@ -35,5 +38,5 @@ shape = SubResource("CapsuleShape3D_gfjak")
 debug_color = Color(0.815977, 0.095162, 0.328048, 0.42)
 
 [node name="EyesPlaceholder" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.671635, 0, 0, 0, 0.278678, 0, 0, 0, 0.579446, 0, 0.419904, 0.254255)
+transform = Transform3D(0.671635, 0, 0, 0, 0.278678, 0, 0, 0, 0.579446, 0, 1.4199, 0.254255)
 mesh = SubResource("BoxMesh_4kuee")
