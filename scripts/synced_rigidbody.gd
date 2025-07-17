@@ -25,14 +25,14 @@ func _ready():
 
 func _physics_process(_delta):
 	if multiplayer.is_server():
-		# TODO: Maybe re-enable simple delta-compression?
-		## if global_position.distance_to(last_position) > EPSILON:
-		var time = NetworkManager.get_time()
-		sync_rigidbody_state.rpc(
-			global_position, global_rotation, linear_velocity, angular_velocity,
-			time
-		)
-		last_position = self.global_position
+		# simple delta-compression
+		if global_position.distance_to(last_position) > EPSILON:
+			var time = NetworkManager.get_time()
+			sync_rigidbody_state.rpc(
+				global_position, global_rotation, linear_velocity, angular_velocity,
+				time
+			)
+			last_position = self.global_position
 
 
 

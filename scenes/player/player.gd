@@ -131,7 +131,7 @@ func _server_collide(body: RigidBody3D):
 @rpc("any_peer", "call_remote", "unreliable_ordered", Util.UNRELIABLE_ORDERED)
 func sync_physics_state(pos: Vector3, lin_vel: Vector3, move_dir: Vector2, send_time: float):
 	bufferer.lerp_from_server(send_time, "global_position", pos)
-	bufferer.lerp_from_server(send_time, "velocity", lin_vel)
+	#bufferer.lerp_from_server(send_time, "velocity", lin_vel)
 	bufferer.do_from_server(send_time, func():
 		# dont lerp direction, just set it directly.
 		self.direction = move_dir
@@ -140,7 +140,7 @@ func sync_physics_state(pos: Vector3, lin_vel: Vector3, move_dir: Vector2, send_
 
 
 # client -> server
-@rpc("authority", "call_remote", "unreliable", Util.UNRELIABLE)
+@rpc("authority", "call_remote", "unreliable_ordered", Util.UNRELIABLE_ORDERED)
 func sync_move_direction(move_dir: Vector2, send_time: float):
 	# Smooth interpolation for non-authority players
 	bufferer.do_from_client(send_time, func():
