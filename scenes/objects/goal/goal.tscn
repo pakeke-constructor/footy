@@ -1,0 +1,27 @@
+[gd_scene load_steps=5 format=3 uid="uid://brj6bimngicos"]
+
+[ext_resource type="Script" uid="uid://djcn5w8wlid1c" path="res://scenes/objects/goal/goal.gd" id="1_481go"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_a4imu"]
+size = Vector3(2, 2, 2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_a4imu"]
+size = Vector3(2, 2, 2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_481go"]
+transparency = 4
+albedo_color = Color(1, 0, 1, 0.235294)
+
+[node name="Goal" type="Area3D"]
+script = ExtResource("1_481go")
+metadata/_custom_type_script = "uid://djcn5w8wlid1c"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("BoxShape3D_a4imu")
+
+[node name="Placeholder" type="MeshInstance3D" parent="."]
+editor_description = "TODO: Goal model"
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("BoxMesh_a4imu")
+surface_material_override/0 = SubResource("StandardMaterial3D_481go")

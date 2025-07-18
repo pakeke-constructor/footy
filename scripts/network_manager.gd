@@ -101,7 +101,7 @@ func host_game() -> void:
 		return
 	multiplayer.multiplayer_peer = peer
 	mode = Mode.SERVER
-	_debug("Server started on port %d" % PORT)
+	debug("Server started on port %d" % PORT)
 
 	# Debug camera for server for debugging in headfull mode.
 	# TODO: Consider making server also a player in the lobby.
@@ -119,39 +119,39 @@ func join_game(ip: String) -> void:
 		push_error("Failed to connect to server at %s:%d" % [ip, PORT])
 		return
 	multiplayer.multiplayer_peer = peer
-	_debug("Attempting to connect to server at %s:%d" % [ip, PORT])
+	debug("Attempting to connect to server at %s:%d" % [ip, PORT])
 
 
 func _on_connected_to_server() -> void:
 	mode = Mode.CLIENT
-	_debug("Connected to server")
+	debug("Connected to server")
 	_broadcast_player.rpc_id(1, multiplayer.get_unique_id(), var_to_str(player_data))
 
 
 func _on_connection_failed() -> void:
-	_debug("Connection to server failed")
+	debug("Connection to server failed")
 
 
 func _on_peer_connected(id: int) -> void:
-	_debug("Peer connected: %d" % id)
+	debug("Peer connected: %d" % id)
 	# player_connected.emit(id)
 
 
 func _on_peer_disconnected(id: int) -> void:
-	_debug("Peer disconnected: %d" % id)
+	debug("Peer disconnected: %d" % id)
 	player_disconnected.emit(id)
 	players.erase(id)
 
 
 func _on_server_disconnected() -> void:
-	_debug("Server disconnected")
+	debug("Server disconnected")
 	mode = Mode.OFFLINE
 	multiplayer.multiplayer_peer = null
 	server_disconnected.emit()
 	players.clear()
 
 
-func _debug(message: String) -> void:
+func debug(message: String) -> void:
 	match mode:
 		Mode.SERVER:
 			print("[SERVER]: %s" % message)
@@ -183,7 +183,7 @@ func _process(dt: float) -> void:
 
 @rpc("any_peer", "call_remote", "reliable")
 func _broadcast_player(id: int, player_data_str: String) -> void:
-	_debug("Broadcasting player %d data to all peers" % id)
+	debug("Broadcasting player %d data to all peers" % id)
 	# TODO: FIXME: this is extremely fragile, we are trusting client to send arbitrary JSON.
 	# This should to be fixed at some point, If a bad actor sends malformed json it could crash server in the future
 	_register_player.rpc(id, player_data_str)
@@ -191,7 +191,7 @@ func _broadcast_player(id: int, player_data_str: String) -> void:
 
 @rpc("authority", "call_local", "reliable")
 func _register_player(id: int, player_data_str: String) -> void:
-	_debug("Registering player %d with data: %s" % [id, player_data_str])
+	debug("Registering player %d with data: %s" % [id, player_data_str])
 	players[id] = str_to_var(player_data_str)
 	player_connected.emit(id)
 

@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://dd0ceu3vsti2t"]
 
-[ext_resource type="Script" uid="uid://cll28rcl7qnlq" path="res://scripts/synced_rigidbody.gd" id="1_ijbg5"]
+[ext_resource type="Script" uid="uid://vrjlse41qsux" path="res://scenes/objects/ball/ball.gd" id="1_ijbg5"]
 
 [sub_resource type="SphereMesh" id="SphereMesh_7haiw"]
 
@@ -8,7 +8,7 @@
 
 [node name="Ball" type="RigidBody3D"]
 script = ExtResource("1_ijbg5")
-metadata/_custom_type_script = "uid://cll28rcl7qnlq"
+metadata/_custom_type_script = "uid://vrjlse41qsux"
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 mesh = SubResource("SphereMesh_7haiw")

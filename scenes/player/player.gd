@@ -123,9 +123,8 @@ func _server_collide(body: RigidBody3D):
 	var impulse = impulse_scalar * diff
 	body.linear_velocity += impulse
 
-
-
-
+	if body is Ball:
+		body.last_player_id = player_id
 
 # server -> client
 @rpc("any_peer", "call_remote", "unreliable_ordered", Util.UNRELIABLE_ORDERED)
