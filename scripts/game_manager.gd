@@ -36,6 +36,7 @@ func score_player(player_id: int) -> void:
 func _on_player_connected(id: int) -> void:
 	if multiplayer.is_server():
 		player_scores[id] = 0
+		_update_team_scores.rpc_id(id, team_scores)
 		_update_player_scores.rpc_id(id, player_scores)
 
 
