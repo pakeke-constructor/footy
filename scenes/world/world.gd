@@ -16,7 +16,7 @@ func _ready():
 	_spawn_physics_objects()
 
 	set_physics_process(multiplayer.is_server())
-
+	GameManager.start_match()
 
 
 func _spawn_physics_objects():
