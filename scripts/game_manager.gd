@@ -6,6 +6,11 @@ enum Team {
 	RED
 }
 
+enum GameState {
+	STOPPED,  # Match is not in progress
+	PLAYING,  # Match is in progress
+}
+
 var team_scores: Dictionary[Team, int] = {
 	Team.BLUE: 0,
 	Team.RED: 0
@@ -13,10 +18,19 @@ var team_scores: Dictionary[Team, int] = {
 
 var player_scores: Dictionary[int, int] = {}
 
+var state: GameState = GameState.STOPPED
+var match_time: float = 0.0
+
 
 func _ready() -> void:
 	NetworkManager.player_connected.connect(_on_player_connected)
 	NetworkManager.player_disconnected.connect(_on_player_disconnected)
+
+
+func _physics_process(delta: float) -> void:
+	if multiplayer.is_server() and state == GameState.PLAYING:
+		match_time += delta
+		_update_match_time.rpc(match_time)
 
 
 func score_team(team: Team) -> void:
@@ -36,13 +50,33 @@ func score_player(player_id: int) -> void:
 func _on_player_connected(id: int) -> void:
 	if multiplayer.is_server():
 		player_scores[id] = 0
-		_update_player_scores.rpc_id(id, player_scores)
+		_update_team_scores.rpc_id(id, team_scores)
+		_update_player_scores.rpc(player_scores)
+		_update_game_state.rpc_id(id, state)
+		_update_match_time.rpc_id(id, match_time)
 
 
 func _on_player_disconnected(id: int) -> void:
 	if multiplayer.is_server():
 		player_scores.erase(id)
 		_update_player_scores.rpc(player_scores)
+
+
+func start_match() -> void:
+	if multiplayer.is_server():
+		team_scores = {Team.BLUE: 0, Team.RED: 0}
+		match_time = 0.0
+		state = GameState.PLAYING
+
+		_update_team_scores.rpc(team_scores)
+		_update_match_time.rpc(match_time)
+		_update_game_state.rpc(state)
+
+
+func stop_match() -> void:
+	if multiplayer.is_server():
+		state = GameState.STOPPED
+		_update_game_state.rpc(state)
 
 
 @rpc("authority", "call_remote", "reliable")
@@ -55,3 +89,14 @@ func _update_team_scores(new_team_scores: Dictionary[Team, int]) -> void:
 func _update_player_scores(new_player_scores: Dictionary[int, int]) -> void:
 	player_scores = new_player_scores
 	NetworkManager.debug("Player scores updated: %s" % player_scores)
+
+
+@rpc("authority", "call_remote", "reliable")
+func _update_game_state(new_state: GameState) -> void:
+	state = new_state
+	NetworkManager.debug("Game state updated: %s" % state)
+
+
+@rpc("authority", "call_remote", "unreliable_ordered")
+func _update_match_time(new_time: float) -> void:
+	match_time = new_time

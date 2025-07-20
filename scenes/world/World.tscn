@@ -1,7 +1,8 @@
-[gd_scene load_steps=10 format=3 uid="uid://c4r7etcwy3mie"]
+[gd_scene load_steps=11 format=3 uid="uid://c4r7etcwy3mie"]
 
 [ext_resource type="Script" uid="uid://tehm2n46sp2a" path="res://scenes/world/world.gd" id="1_5qbjp"]
 [ext_resource type="Script" uid="uid://bcbk6lo6uo5r5" path="res://scenes/world/debug.gd" id="2_1oml7"]
+[ext_resource type="PackedScene" uid="uid://cg853y3yh4rlx" path="res://scenes/game_hud/game_hud.tscn" id="2_gbddb"]
 [ext_resource type="PackedScene" uid="uid://brj6bimngicos" path="res://scenes/objects/goal/goal.tscn" id="3_6eebf"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_qjesc"]
@@ -28,6 +29,8 @@ ssao_enabled = true
 
 [node name="World" type="Node3D"]
 script = ExtResource("1_5qbjp")
+
+[node name="GameHud" parent="." instance=ExtResource("2_gbddb")]
 
 [node name="Floor" type="StaticBody3D" parent="."]
 transform = Transform3D(60, 0, 0, 0, 1, 0, 0, 0, 40, 0, -0.5, 0)
