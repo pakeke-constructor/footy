@@ -17,12 +17,13 @@ extends Node
 
 
 ## VVV THIS IS THE MOST IMPORTANT VARIABLE IN THE ENTIRE CODEBASE.
-const CLIENT_RTT = 0.10
+const CLIENT_RTT = 0.1
 # CLIENT_RTT is the artificial delay between player-input and server-reaction
-# This delay assumes a RTT of 0.10 seconds; in other words, 50ms ping.
 
-# if a player has lower latency, our systems will insert an "artificial" delay in, 
-# so that the game feels consistent.
+# EG a CLIENT_RTT is 0.10 seconds, our systems will insert an "artificial" delay in, 
+# so that the game feels consistent across all different pings.
+# (For example 0.1 CLIENT_RTT =  100ms ping.)
+
 
 
 

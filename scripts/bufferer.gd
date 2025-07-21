@@ -46,16 +46,19 @@ func do_from_client(send_time: float, execute_func: Callable) -> void:
 
 
 # use this for interpolating values sent from the server.
-func lerp_from_server(send_time: float, prop: String, val) -> void:
+func lerp_from_server(send_time: float, prop: String, val, custom_lerp = false) -> void:
 	assert(not multiplayer.is_server())
 	# we subtract `TICK_STEP` because we interpolate over TICK_STEP duration
+	if not custom_lerp:
+		custom_lerp = lerp
+
 	_add(send_time + (NetworkManager.CLIENT_RTT/2.0) - NetworkManager.TICK_STEP, 
 		func():
 			if _lerps.has(prop):
 				# if there's an existing lerp; 
 				# jump towards to the lerp target. Assuming packets are flowing smoothly,
 				# this shouldn't be a big jump at all.
-				_node[prop] = lerp(_node[prop], _lerps[prop], 0.5)
+				_node[prop] = custom_lerp.call(_node[prop], _lerps[prop], 0.5)
 
 			_times[prop] = 0
 			_lerps[prop] = val

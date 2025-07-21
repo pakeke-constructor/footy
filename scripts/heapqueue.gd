@@ -47,7 +47,8 @@ func is_empty() -> bool:
 func _heapify_up(index: int):
 	if index == 0:
 		return
-	
+
+	@warning_ignore("integer_division")
 	var parent = (index - 1) / 2
 	if _compare_func.call(_heap[index], _heap[parent]):
 		_swap(index, parent)
@@ -74,6 +75,3 @@ func _swap(i: int, j: int):
 	var temp = _heap[i]
 	_heap[i] = _heap[j]
 	_heap[j] = temp
-
-
-

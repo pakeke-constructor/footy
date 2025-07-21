@@ -27,12 +27,12 @@ static func await_ready(node: Node):
 
 static func disable_physics_clientside(node: Node):
 	if not node.multiplayer.is_server():
-		# TODO: is this even working? NGL I used an LLM to generate this
-		if node.has_method("set_collision_layer") and node.has_method("set_collision_mask"):
-			node.set_collision_layer(0)
-			node.set_collision_mask(0)
+		node.set_collision_layer(0)
+		node.set_collision_mask(0)
 
 
+static func lerp_quarternion(a: Quaternion, b: Quaternion, t: float):
+	return a.slerp(b, t)
 
 
 static func debug(a: Variant = null, b: Variant = null, c: Variant = null, d: Variant = null):

@@ -18,6 +18,7 @@ func _on_timer_timeout() -> void:
 	
 	# Add match timer if the game is in progress
 	if GameManager.state == GameManager.GameState.PLAYING:
+		@warning_ignore("integer_division")
 		var minutes: int = int(GameManager.match_time) / 60
 		var seconds: int = int(GameManager.match_time) % 60
 		score_text += "\n%02d:%02d" % [minutes, seconds]

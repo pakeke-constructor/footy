@@ -1,7 +1,7 @@
 
 extends CharacterBody3D
 
-@export var speed = 300.0
+@export var speed = 210.0
 @export var jump_velocity = 4.5
 
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
@@ -34,7 +34,6 @@ func _ready():
 	else:
 		# Else, its on server, OR on another 
 		set_process_input(false)
-		$ServerCollider.server_collide.connect(_server_collide)
 
 
 
@@ -50,6 +49,15 @@ func _physics_process_server(delta: float) -> void:
 		velocity.z = move_toward(velocity.z, 0, speed * delta)
 	
 	move_and_slide()
+
+	var push_strength = 2;
+	for i in get_slide_collision_count():
+		var collision = get_slide_collision(i)
+		var collider = collision.get_collider()
+		
+		if collider is RigidBody3D:
+			var push_force = -collision.get_normal() * push_strength
+			collider.apply_impulse(push_force, collision.get_position() - collider.global_position)
 
 	# TODO: in future could do simple delta-compression:
 	# if global_position.distance_to(last_position) > EPSILON:
@@ -98,33 +106,6 @@ func _input(event):
 			pass # TODO: kick ball, use tool, do something?
 
 
-
-func _server_collide(body: RigidBody3D):
-	var diff = body.global_position - self.global_position
-	diff = diff.normalized()
-
-	var restitution = 1.0
-
-	var body_v: Vector3 = body.linear_velocity
-	var self_v: Vector3 = self.velocity
-	
-	var relative_velocity = body_v - self_v
-	var velocity_along_normal = relative_velocity.dot(diff)
-
-	if velocity_along_normal > 0:
-		# Don't resolve if velocities are separating
-		return
-	
-	DebugDraw3D.draw_line(self.global_position, self.global_position + relative_velocity, Color(1, 1, 0))
-
-	# Calculate impulse scalar
-	var impulse_scalar = -(1 + restitution) * velocity_along_normal
-	
-	var impulse = impulse_scalar * diff
-	body.linear_velocity += impulse
-
-	if body is Ball:
-		body.last_player_id = player_id
 
 # server -> client
 @rpc("any_peer", "call_remote", "unreliable_ordered", Util.UNRELIABLE_ORDERED)
