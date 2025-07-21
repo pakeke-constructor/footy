@@ -1,18 +1,23 @@
-[gd_scene load_steps=4 format=3 uid="uid://db5bq6orvbfxs"]
+[gd_scene load_steps=5 format=3 uid="uid://db5bq6orvbfxs"]
 
-[sub_resource type="BoxMesh" id="BoxMesh_qjesc"]
+[ext_resource type="Script" uid="uid://cdnc5cvee186" path="res://scenes/world/pitch/pitch.gd" id="1_86qnl"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gbddb"]
-albedo_color = Color(0.610139, 0.781129, 0.547532, 1)
+[sub_resource type="BoxShape3D" id="BoxShape3D_86qnl"]
+size = Vector3(60, 1, 40)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_5qbjp"]
+[sub_resource type="PlaneMesh" id="PlaneMesh_wnbyy"]
+size = Vector2(60, 40)
 
-[node name="Floor" type="StaticBody3D"]
-transform = Transform3D(60, 0, 0, 0, 1, 0, 0, 0, 40, 0, 0, 0)
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_86qnl"]
+albedo_color = Color(0.252528, 0.163875, 0.0168453, 1)
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-mesh = SubResource("BoxMesh_qjesc")
-surface_material_override/0 = SubResource("StandardMaterial3D_gbddb")
+[node name="Pitch" type="StaticBody3D"]
+script = ExtResource("1_86qnl")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-shape = SubResource("BoxShape3D_5qbjp")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+shape = SubResource("BoxShape3D_86qnl")
+
+[node name="DirtPlane" type="MeshInstance3D" parent="."]
+mesh = SubResource("PlaneMesh_wnbyy")
+surface_material_override/0 = SubResource("StandardMaterial3D_86qnl")
