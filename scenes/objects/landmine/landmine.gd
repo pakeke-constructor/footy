@@ -3,6 +3,7 @@ extends SyncedRigidBody3D
 
 
 @export var explosion_force: float = 5.0
+@export var explosion_radius: float = 3.0
 
 @onready var detector: Area3D = $Detector
 
@@ -24,10 +25,14 @@ func _on_body_entered(body: Node) -> void:
 		return
 	
 	if body is SyncedRigidBody3D:
-		var force_direction = (body.global_position - global_position).normalized()
-		body.apply_impulse(force_direction * explosion_force, body.global_position - global_position)
-		NetworkManager.debug("Boom!")
-		_despawn.rpc()
+		var direction = (body.global_position - global_position)
+		var distance = direction.length()
+
+		if distance < explosion_radius:
+			direction = direction.normalized()
+			var force = direction * explosion_force * (1.0 - (distance / explosion_radius))
+			body.apply_impulse(force, global_position - body.global_position)
+			_despawn.rpc()
 
 
 @rpc("authority", "call_local", "reliable")
