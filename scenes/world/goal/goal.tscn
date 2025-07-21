@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://brj6bimngicos"]
 
-[ext_resource type="Script" uid="uid://djcn5w8wlid1c" path="res://scenes/objects/goal/goal.gd" id="1_481go"]
-[ext_resource type="ArrayMesh" uid="uid://05d36y8drkni" path="res://scenes/objects/goal/Goal.obj" id="2_snpuw"]
+[ext_resource type="Script" uid="uid://djcn5w8wlid1c" path="res://scenes/world/goal/goal.gd" id="1_481go"]
+[ext_resource type="ArrayMesh" uid="uid://05d36y8drkni" path="res://scenes/world/goal/Goal.obj" id="2_snpuw"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_a4imu"]
 size = Vector3(1.38927, 3.22168, 5.75317)
