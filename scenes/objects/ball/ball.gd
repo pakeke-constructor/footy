@@ -11,7 +11,7 @@ func _ready() -> void:
 	super() # calls _ready
 
 	bouncy_material.bounce = 0.87  # Values > 1.0 for extra bouncy
-	bouncy_material.friction = 0.1  # Low friction for realistic ball behavior
+	bouncy_material.friction = 0.5  # Low friction for realistic ball behavior
 
 	physics_material_override = bouncy_material
 
