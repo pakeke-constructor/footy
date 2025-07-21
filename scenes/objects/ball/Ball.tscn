@@ -11,9 +11,8 @@ script = ExtResource("1_ijbg5")
 metadata/_custom_type_script = "uid://vrjlse41qsux"
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.36, 0, 0, 0, 0.36, 0, 0, 0, 0.36, 0, -0.714026, 0)
+transform = Transform3D(0.24, 0, 0, 0, 0.24, 0, 0, 0, 0.24, 0, -0.522638, 0)
 mesh = ExtResource("2_jquva")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0, 0, 0)
 shape = SubResource("SphereShape3D_ijbg5")

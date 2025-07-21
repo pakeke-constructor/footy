@@ -31,6 +31,8 @@ static func disable_physics_clientside(node: Node):
 		node.set_collision_mask(0)
 
 
+static func lerp_quarternion(a: Quaternion, b: Quaternion, t: float):
+	return a.slerp(b, t)
 
 
 static func debug(a: Variant = null, b: Variant = null, c: Variant = null, d: Variant = null):
