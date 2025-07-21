@@ -20,12 +20,13 @@ func _ready():
 
 
 func _spawn_physics_objects():
-	for i in range(1):
-		var obj = ball_scene.instantiate()
-		obj.position = Vector3(randf_range(-10, 10), 5, randf_range(-10, 10))
-		obj.name = "PhysicsObject_" + str(i)
-		add_child(obj)
-		physics_objects[obj.name] = obj
+	# TODO: Move ball spawning logic to GameManager?
+	var ball = ball_scene.instantiate()
+	ball.position = Vector3(randf_range(-10, 10), 5, randf_range(-10, 10))
+	ball.name = "Ball"
+	add_child(ball)
+	physics_objects[ball.name] = ball
+	GameManager.ball = ball
 
 
 func _on_player_disconnected(id: int):

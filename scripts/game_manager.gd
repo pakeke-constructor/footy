@@ -19,6 +19,7 @@ var team_scores: Dictionary[Team, int] = {
 var player_scores: Dictionary[int, int] = {}
 
 var state: GameState = GameState.STOPPED
+var ball: Ball
 var match_time: float = 0.0
 
 
@@ -45,6 +46,22 @@ func score_player(player_id: int) -> void:
 	player_scores[player_id] += 1
 	NetworkManager.debug("Player %s scored! Broadcasting player scores." % player_id)
 	_update_player_scores.rpc(player_scores)
+
+
+@rpc("authority", "call_local", "reliable")
+func respawn_ball() -> void:
+	if not ball:
+		return
+
+	var ball_parent = ball.get_parent()
+	ball_parent.remove_child(ball)
+	await get_tree().create_timer(3.0).timeout
+	ball_parent.add_child(ball)
+	ball.global_position = Vector3(randf_range(-10, 10), 5, randf_range(-10, 10))
+	ball.linear_velocity = Vector3.ZERO
+	ball.angular_velocity = Vector3.ZERO
+	ball.last_player_id = -1
+	NetworkManager.debug("Ball respawned at %s" % ball.global_position)
 
 
 func _on_player_connected(id: int) -> void:
