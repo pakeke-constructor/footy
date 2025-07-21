@@ -1,7 +1,7 @@
 
 extends CharacterBody3D
 
-@export var speed = 300.0
+@export var speed = 210.0
 @export var jump_velocity = 4.5
 
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
@@ -34,7 +34,7 @@ func _ready():
 	else:
 		# Else, its on server, OR on another 
 		set_process_input(false)
-		$ServerCollider.server_collide.connect(_server_collide)
+		# $ServerCollider.server_collide.connect(_server_collide)
 
 
 
@@ -50,6 +50,15 @@ func _physics_process_server(delta: float) -> void:
 		velocity.z = move_toward(velocity.z, 0, speed * delta)
 	
 	move_and_slide()
+
+	var push_strength = 2;
+	for i in get_slide_collision_count():
+		var collision = get_slide_collision(i)
+		var collider = collision.get_collider()
+		
+		if collider is RigidBody3D:
+			var push_force = -collision.get_normal() * push_strength
+			collider.apply_impulse(push_force, collision.get_position() - collider.global_position)
 
 	# TODO: in future could do simple delta-compression:
 	# if global_position.distance_to(last_position) > EPSILON:

@@ -1,42 +1,30 @@
-[gd_scene load_steps=8 format=3 uid="uid://cf1gm4p05fgdf"]
+[gd_scene load_steps=6 format=3 uid="uid://cf1gm4p05fgdf"]
 
 [ext_resource type="Script" uid="uid://dxihab7dsjjib" path="res://scenes/player/player.gd" id="1_wr5hl"]
-[ext_resource type="Script" uid="uid://186dtvticvj3" path="res://scenes/player/server_collider.gd" id="3_4kuee"]
 
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_gfjak"]
+[sub_resource type="BoxMesh" id="BoxMesh_wr5hl"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gfjak"]
 albedo_color = Color(0.801414, 0.752535, 0.229286, 1)
 
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_4kuee"]
-resource_local_to_scene = true
-
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_gfjak"]
-radius = 0.55
-height = 2.1
+[sub_resource type="SphereShape3D" id="SphereShape3D_wr5hl"]
+radius = 0.7
 
 [sub_resource type="BoxMesh" id="BoxMesh_4kuee"]
 
 [node name="Player" type="CharacterBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0528901, 0)
 script = ExtResource("1_wr5hl")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-mesh = SubResource("CapsuleMesh_gfjak")
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0.54726, 0)
+mesh = SubResource("BoxMesh_wr5hl")
 surface_material_override/0 = SubResource("StandardMaterial3D_gfjak")
 
 [node name="CapsuleShape" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-shape = SubResource("CapsuleShape3D_4kuee")
-
-[node name="ServerCollider" type="Area3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-script = ExtResource("3_4kuee")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="ServerCollider"]
-shape = SubResource("CapsuleShape3D_gfjak")
-debug_color = Color(0.815977, 0.095162, 0.328048, 0.42)
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0.552087, 0)
+shape = SubResource("SphereShape3D_wr5hl")
 
 [node name="EyesPlaceholder" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.671635, 0, 0, 0, 0.278678, 0, 0, 0, 0.579446, 0, 1.4199, 0.254255)
+transform = Transform3D(0.4, 0, 0, 0, 0.166, 0, 0, 0, 0.345, 0, 0.554774, 0.213063)
 mesh = SubResource("BoxMesh_4kuee")
