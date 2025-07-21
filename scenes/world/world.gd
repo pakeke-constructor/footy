@@ -20,7 +20,7 @@ func _ready():
 
 
 func _spawn_physics_objects():
-	for i in range(0):
+	for i in range(1):
 		var obj = ball_scene.instantiate()
 		obj.position = Vector3(randf_range(-10, 10), 5, randf_range(-10, 10))
 		obj.name = "PhysicsObject_" + str(i)

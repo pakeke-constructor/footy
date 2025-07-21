@@ -93,8 +93,8 @@ script = ExtResource("2_1oml7")
 environment = SubResource("Environment_1oml7")
 
 [node name="Goal" parent="." instance=ExtResource("3_6eebf")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26.2755, 0, 0)
 
 [node name="Goal2" parent="." instance=ExtResource("3_6eebf")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.3628, 0, 0)
 team = 1

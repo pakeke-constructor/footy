@@ -12,8 +12,8 @@ albedo_color = Color(0.801414, 0.752535, 0.229286, 1)
 resource_local_to_scene = true
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_gfjak"]
-radius = 0.7
-height = 2.2
+radius = 0.55
+height = 2.1
 
 [sub_resource type="BoxMesh" id="BoxMesh_4kuee"]
 
