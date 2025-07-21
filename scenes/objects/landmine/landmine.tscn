@@ -22,7 +22,7 @@ height = 0.1
 albedo_color = Color(1, 0.152941, 0.152941, 1)
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_ruine"]
-height = 0.1
+height = 0.197803
 radius = 0.2
 
 [node name="Landmine" type="RigidBody3D"]
@@ -46,5 +46,5 @@ surface_material_override/0 = SubResource("StandardMaterial3D_jjkxj")
 [node name="Detector" type="Area3D" parent="."]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Detector"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0776438, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2166, 0)
 shape = SubResource("CylinderShape3D_ruine")
