@@ -27,6 +27,7 @@ sky_material = SubResource("ProceduralSkyMaterial_1oml7")
 background_mode = 2
 sky = SubResource("Sky_6eebf")
 ssao_enabled = true
+volumetric_fog_length = 183.72
 
 [node name="World" type="Node3D"]
 script = ExtResource("1_5qbjp")

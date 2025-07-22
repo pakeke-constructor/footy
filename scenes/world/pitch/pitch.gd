@@ -1,33 +1,41 @@
 extends StaticBody3D
 
 
-@export var PITCH_LENGTH = 60.0;
-@export var PITCH_WIDTH = 40.0;
+@export var PITCH_LENGTH := 60;
+@export var PITCH_WIDTH := 40;
+
+const PLANE_SEPARATION := 0.2;
+const NUM_PLANES := 6;
+
+
 
 
 func _ready() -> void:
-	var plane: MeshInstance3D = $DirtPlane
-	plane.mesh.size = Vector2(PITCH_LENGTH, PITCH_WIDTH)
+	create_shell_texture_layers()
+
 
 
 func create_shell_texture_layers():
-	var multi_mesh_instance = MultiMeshInstance3D.new()
-	add_child(multi_mesh_instance)
-	
-	var multi_mesh = MultiMesh.new()
-	multi_mesh_instance.multimesh = multi_mesh
-	
-	var plane_mesh = PlaneMesh.new()
-	plane_mesh.size = Vector2(2.0, 2.0)  # 2x2 plane
-	
-	multi_mesh.mesh = plane_mesh
-	multi_mesh.instance_count = 3
-	multi_mesh.transform_format = MultiMesh.TRANSFORM_3D
-	
-	for i in range(3):
+	var sep := PLANE_SEPARATION / NUM_PLANES
+	var shader = preload("res://scenes/world/pitch/shell_texture.gdshader")
+
+	for i in range(NUM_PLANES):
+		var mesh_instance := MeshInstance3D.new()
+		var mesh := PlaneMesh.new()
+		mesh.subdivide_width = PITCH_LENGTH
+		mesh.subdivide_depth = PITCH_WIDTH
+		var size := Vector2(PITCH_LENGTH, PITCH_WIDTH)
+		mesh.size = size
+		mesh_instance.mesh = mesh
+
+		var material := ShaderMaterial.new()
+		material.shader = shader
+		material.set_shader_parameter("shell_index", i)
+		material.set_shader_parameter("pitch_size", size)
+		mesh_instance.material_override = material
+
 		var t = Transform3D()
-		t.origin = Vector3(0, i * 1.5, 0)  # Stack them 1.5 units apart
-		multi_mesh.set_instance_transform(i, t)
+		t.origin = Vector3(0.0, 0.001 + i * sep, 0.0)
+		mesh_instance.transform = t
 
-
-
+		add_child(mesh_instance)
