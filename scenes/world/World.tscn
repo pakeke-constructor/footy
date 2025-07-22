@@ -1,10 +1,11 @@
-[gd_scene load_steps=12 format=3 uid="uid://c4r7etcwy3mie"]
+[gd_scene load_steps=13 format=3 uid="uid://c4r7etcwy3mie"]
 
 [ext_resource type="Script" uid="uid://tehm2n46sp2a" path="res://scenes/world/world.gd" id="1_5qbjp"]
 [ext_resource type="Script" uid="uid://bcbk6lo6uo5r5" path="res://scenes/world/debug.gd" id="2_1oml7"]
 [ext_resource type="PackedScene" uid="uid://cg853y3yh4rlx" path="res://scenes/game_hud/game_hud.tscn" id="2_gbddb"]
 [ext_resource type="PackedScene" uid="uid://brj6bimngicos" path="res://scenes/world/goal/goal.tscn" id="3_6eebf"]
 [ext_resource type="PackedScene" uid="uid://db5bq6orvbfxs" path="res://scenes/world/pitch/Pitch.tscn" id="5_qxiha"]
+[ext_resource type="PackedScene" uid="uid://07fuc0ukbin4" path="res://scenes/objects/landmine/landmine.tscn" id="6_qxiha"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_qjesc"]
 
@@ -95,3 +96,5 @@ transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 26, 0,
 team = 1
 
 [node name="Pitch" parent="." instance=ExtResource("5_qxiha")]
+[node name="Landmine" parent="." instance=ExtResource("6_qxiha")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.97968, 0, 0.0066556)
