@@ -35,6 +35,8 @@ func create_shell_texture_layers():
 
 		var material := ShaderMaterial.new()
 		material.shader = shader
+
+		material.set_shader_parameter("pitch_texture", preload("res://scenes/world/pitch/pitch_image.jpg"))
 		material.set_shader_parameter("shell_index", i)
 		material.set_shader_parameter("num_shells", NUM_SHELLS)
 		material.set_shader_parameter("grass_grid_size", size * GRASS_PER_UNIT)

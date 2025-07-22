@@ -8,10 +8,13 @@ uniform vec3 grass_color : source_color = vec3(0.2, 0.7, 0.3);
 uniform float grass_length : hint_range(0.01, 1.0) = 0.1;
 uniform float big_noise_period = 30.0;
 
+uniform sampler2D pitch_texture : source_color, hint_default_white;
+
 
 varying vec3 world_position;
 varying vec3 world_normal;
 
+/*
 void vertex() {
     // Extrude vertices along normal for shell layering
     float shell_height = float(shell_index) / float(num_shells);
@@ -20,6 +23,7 @@ void vertex() {
     world_position = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
     world_normal = normalize((MODEL_MATRIX * vec4(NORMAL, 0.0)).xyz);
 }
+*/
 
 
 float random(vec2 input) {
@@ -67,14 +71,22 @@ void fragment() {
     
     // Taper grass as they get higher
     float shell_ratio = float(shell_index) / float(num_shells);
+
+    vec4 pitch_color = texture(pitch_texture, UV);
+    bool is_line = length(pitch_color.xyz) < 0.5;
     
     if (height < shell_index) {
         discard;
     } else {
         // Color variation based on height and add some randomness
         float color_variation = 0.8 + 0.4 * random;
-        vec3 final_color = grass_color * color_variation;
-        
+        vec3 final_color;
+        if (is_line) {
+            final_color = vec3(1,1,1) * color_variation;
+        } else {
+            final_color = grass_color * color_variation;
+        }
+
         // Darken higher shells slightly for depth
         final_color *= (0.2 + shell_ratio);
         
