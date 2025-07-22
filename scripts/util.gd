@@ -27,7 +27,9 @@ static func await_ready(node: Node):
 
 static func disable_physics_clientside(node: Node):
 	if not node.multiplayer.is_server():
+		@warning_ignore("unsafe_method_access")
 		node.set_collision_layer(0)
+		@warning_ignore("unsafe_method_access")
 		node.set_collision_mask(0)
 
 

@@ -107,7 +107,7 @@ func host_game() -> void:
 	# Debug camera for server for debugging in headfull mode.
 	# TODO: Consider making server also a player in the lobby.
 	if OS.is_debug_build():
-		var camera = Camera3D.new()
+		var camera := Camera3D.new()
 		add_child(camera)
 		camera.position = Vector3(0, 30, 0)
 		camera.look_at(Vector3.ZERO + Vector3(0.01, 0.01, 0.01))
@@ -198,14 +198,15 @@ func _register_player(id: int, player_data_str: String) -> void:
 
 
 func get_rtt(peer_id: int):
-	var peer : ENetPacketPeer = multiplayer.multiplayer_peer.get_peer(peer_id)
+	var emp: ENetMultiplayerPeer = multiplayer.multiplayer_peer
+	var peer : ENetPacketPeer = emp.get_peer(peer_id)
 	var rtt = peer.get_statistic(peer.PEER_ROUND_TRIP_TIME) / 1000.0
 	# ^^^ *AVERAGE* RTT for a reliable packet.
 	return rtt
 
 
 func get_sender_rtt():
-	var peer_id = multiplayer.get_remote_sender_id()
+	var peer_id : int = multiplayer.get_remote_sender_id()
 	return get_rtt(peer_id)
 
 
