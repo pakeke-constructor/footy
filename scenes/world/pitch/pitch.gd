@@ -7,10 +7,10 @@ extends StaticBody3D
 
 # Using shell-texturing
 const SHELL_SEPARATION := 0.2;
-const NUM_SHELLS := 12;
+const NUM_SHELLS := 16;
 
 
-const GRASS_PER_UNIT = 8;
+const GRASS_PER_UNIT = 10;
 
 
 
@@ -36,6 +36,7 @@ func create_shell_texture_layers():
 		var material := ShaderMaterial.new()
 		material.shader = shader
 		material.set_shader_parameter("shell_index", i)
+		material.set_shader_parameter("num_shells", NUM_SHELLS)
 		material.set_shader_parameter("grass_grid_size", size * GRASS_PER_UNIT)
 		mesh_instance.material_override = material
 

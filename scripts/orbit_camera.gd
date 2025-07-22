@@ -5,7 +5,7 @@ extends Camera3D
 # Camera settings
 @export var target: Node3D  # The object to follow (your car/player)
 @export var follow_offset: Vector3
-@export var follow_distance: float = 4.0
+@export var follow_distance: float = 3.0
 @export var camera_speed: float = 15.0
 @export var rotation_speed: float = 3.0
 @export var mouse_sensitivity: float = 0.005
