@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://c4r7etcwy3mie"]
+[gd_scene load_steps=16 format=3 uid="uid://c4r7etcwy3mie"]
 
 [ext_resource type="Script" uid="uid://tehm2n46sp2a" path="res://scenes/world/world.gd" id="1_5qbjp"]
 [ext_resource type="Script" uid="uid://bcbk6lo6uo5r5" path="res://scenes/world/debug.gd" id="2_1oml7"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://brj6bimngicos" path="res://scenes/world/goal/goal.tscn" id="3_6eebf"]
 [ext_resource type="Script" uid="uid://bx7salvcww6fm" path="res://scripts/ball_indicator_renderer.gd" id="3_qh0kd"]
 [ext_resource type="Texture2D" uid="uid://bmahfeglerxg5" path="res://textures/vignette.png" id="3_qxiha"]
+[ext_resource type="Texture2D" uid="uid://sjij5f3r8yqe" path="res://addons/kenney_game-icons/PNG/Black/1x/arrowUp.png" id="4_yr1n6"]
 [ext_resource type="PackedScene" uid="uid://db5bq6orvbfxs" path="res://scenes/world/pitch/Pitch.tscn" id="5_qxiha"]
 [ext_resource type="PackedScene" uid="uid://07fuc0ukbin4" path="res://scenes/objects/landmine/landmine.tscn" id="6_qxiha"]
 
@@ -62,6 +63,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("3_qh0kd")
+arrow_texture = ExtResource("4_yr1n6")
 
 [node name="GameHud" parent="." instance=ExtResource("2_gbddb")]
 

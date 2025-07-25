@@ -2,11 +2,15 @@ extends Control
 
 # Configuration for the indicator
 @export_group("Indicator Appearance")
-@export_range(5.0, 50.0, 1.0) var indicator_radius: float = 20.0
-@export var indicator_color: Color = Color(1.0, 0.8, 0.0, 0.8)
-@export var indicator_border_color: Color = Color(0.0, 0.0, 0.0, 0.8)
-@export_range(1.0, 5.0, 0.5) var indicator_border_width: float = 2.0
-@export_range(10.0, 100.0, 5.0) var indicator_margin: float = 30.0
+@export var draw_background_circle: bool = true
+@export var background_color: Color = Color(1.0, 0.8, 0.0, 0.8)  # Yellow with some transparency
+@export var background_radius: float = 25.0
+@export_range(10.0, 100.0, 5.0) var screen_margin: float = 30.0  # Distance from screen edge
+
+@export_group("Indicator Texture")
+@export var arrow_texture: Texture2D
+@export var texture_scale: float = 1.0
+@export var texture_color: Color = Color(1.0, 1.0, 1.0, 1.0)  # White by default
 
 func _process(_delta: float) -> void:
 	queue_redraw()
@@ -70,10 +74,10 @@ func _draw() -> void:
 # Calculate position on screen edge
 func _get_edge_position(center: Vector2, direction: Vector2, viewport_size: Vector2) -> Vector2:
 	# Calculate screen bounds with margin
-	var min_x := indicator_margin
-	var min_y := indicator_margin
-	var max_x := viewport_size.x - indicator_margin
-	var max_y := viewport_size.y - indicator_margin
+	var min_x := screen_margin
+	var min_y := screen_margin
+	var max_x := viewport_size.x - screen_margin
+	var max_y := viewport_size.y - screen_margin
 	
 	# Find intersection with screen edges
 	var position := center
@@ -124,29 +128,31 @@ func _get_edge_position(center: Vector2, direction: Vector2, viewport_size: Vect
 
 # Draw the indicator at the specified position pointing in the given direction
 func _draw_indicator(position: Vector2, direction: Vector2) -> void:
-	# Draw circle
-	draw_circle(position, indicator_radius, indicator_color)
-	draw_arc(position, indicator_radius, 0, TAU, 32, indicator_border_color, indicator_border_width)
+	if not arrow_texture:
+		return
+		
+	# Calculate the angle for the texture rotation
+	# Subtract PI/2 (90 degrees) to correct the rotation
+	var angle := direction.angle() + PI/2
 	
-	# Draw arrow inside the circle
-	var arrow_size: float = indicator_radius * 0.6
-	var arrow_end: Vector2 = position + direction * arrow_size
+	# Draw background circle if enabled
+	if draw_background_circle:
+		draw_circle(position, background_radius, background_color)
 	
-	# Arrow body
-	draw_line(position, arrow_end, indicator_border_color, indicator_border_width, true)
+	# Calculate texture size and position
+	var texture_size := arrow_texture.get_size() * texture_scale
+	var texture_position := position - texture_size / 2
 	
-	# Arrow head
-	var arrow_head_size: float = indicator_radius * 0.4
-	var arrow_right: Vector2 = direction.rotated(3 * PI / 4) * arrow_head_size
-	var arrow_left: Vector2 = direction.rotated(-3 * PI / 4) * arrow_head_size
-	
-	var points := PackedVector2Array([
-		arrow_end,
-		arrow_end + arrow_right,
-		arrow_end + arrow_left
-	])
-	
-	draw_colored_polygon(points, indicator_border_color)
+	# Draw the texture with rotation
+	var transform := Transform2D().rotated(angle)
+	draw_set_transform_matrix(transform.translated(position))
+	draw_texture_rect(
+		arrow_texture,
+		Rect2(-texture_size / 2, texture_size),
+		false,
+		texture_color
+	)
+	draw_set_transform_matrix(Transform2D())
 
 
 # Helper function to find intersection between two line segments
