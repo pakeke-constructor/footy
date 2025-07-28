@@ -1,6 +1,7 @@
-[gd_scene load_steps=8 format=3 uid="uid://07fuc0ukbin4"]
+[gd_scene load_steps=9 format=3 uid="uid://07fuc0ukbin4"]
 
 [ext_resource type="Script" uid="uid://brfubg4qv28bd" path="res://scenes/objects/landmine/landmine.gd" id="1_ruine"]
+[ext_resource type="PackedScene" uid="uid://dao40bl3kdgtw" path="res://scenes/particles/explosion/explosion.tscn" id="2_l42ka"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_ruine"]
 height = 0.1
@@ -27,6 +28,7 @@ radius = 0.2
 
 [node name="Landmine" type="RigidBody3D"]
 script = ExtResource("1_ruine")
+explosion_effect = ExtResource("2_l42ka")
 metadata/_custom_type_script = "uid://cll28rcl7qnlq"
 
 [node name="Body" type="MeshInstance3D" parent="."]
