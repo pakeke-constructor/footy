@@ -64,7 +64,7 @@ func respawn_ball() -> void:
 	NetworkManager.debug("Ball respawned at %s" % ball.global_position)
 
 
-@rpc("authority", "call_local", "reliable")
+# TODO: Test with spawning multiple objects from the same scene path.
 func spawn_object(scene_path: String, position: Vector3, rotation: Vector3 = Vector3.ZERO) -> void:
 	var scene = load(scene_path) as PackedScene
 	if not scene:
