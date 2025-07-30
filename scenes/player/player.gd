@@ -3,10 +3,12 @@ extends CharacterBody3D
 
 @export var speed = 150.0
 @export var jump_velocity = 4.5
+@export var kick_strength = 5.0
 
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 var player_id: int
 var camera: OrbitCamera
+@onready var raycast: RayCast3D = %RayCast3D
 
 var direction := Vector2(0,0)
 
@@ -99,11 +101,22 @@ const MOUSE_SENSITIVITY = 0.001
 
 
 func _input(event):
-	if event is InputEventMouseMotion:
-		pass
-	elif event is InputEventMouseButton:
+	if event is InputEventMouseButton:
 		if event.button_index == 1:
-			pass # TODO: kick ball, use tool, do something?
+			_kick.rpc_id(1)
+
+
+@rpc("any_peer", "call_remote", "reliable")
+func _kick():
+	if not multiplayer.is_server():
+		return
+	
+	print("Checking for kick")
+	if raycast.is_colliding():
+		print("Raycast is colliding with: ", raycast.get_collider())
+		var collider = raycast.get_collider()
+		if collider is Ball:
+			print("Kicking the ball")
 
 
 
