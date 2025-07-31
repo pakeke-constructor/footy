@@ -17,7 +17,7 @@ func _process(_delta: float) -> void:
 
 func _draw() -> void:
 	var camera := get_viewport().get_camera_3d()
-	if not camera or not GameManager.ball:
+	if not camera or not GameManager.ball or not GameManager.ball.is_inside_tree():
 		return
 		
 	var ball_position := GameManager.ball.global_position
