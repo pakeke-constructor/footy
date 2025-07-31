@@ -110,7 +110,7 @@ func _input(event):
 			_kick.rpc_id(1, -camera.global_transform.basis.z * kick_strength)
 
 
-@rpc("any_peer", "call_remote", "reliable")
+@rpc("authority", "call_remote", "reliable")
 func _kick(direction: Vector3):
 	if not multiplayer.is_server():
 		return
