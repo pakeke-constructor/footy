@@ -3,10 +3,12 @@ extends CharacterBody3D
 
 @export var speed = 150.0
 @export var jump_velocity = 4.5
+@export var kick_strength = 5.0
 
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 var player_id: int
 var camera: OrbitCamera
+@onready var detector: Area3D = %Detector
 
 var direction := Vector2(0,0)
 
@@ -83,6 +85,7 @@ func _physics_process_client(_delta: float) -> void:
 	var input_dir := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
 	var move_dir := input_dir.rotated(-camera.global_rotation.y)
 	sync_move_direction.rpc(move_dir, time)
+	sync_rotation.rpc(rotation, time)
 	
 
 
@@ -99,11 +102,30 @@ const MOUSE_SENSITIVITY = 0.001
 
 
 func _input(event):
-	if event is InputEventMouseMotion:
-		pass
-	elif event is InputEventMouseButton:
+	if not is_multiplayer_authority():
+		return
+
+	if event is InputEventMouseButton:
 		if event.button_index == 1:
-			pass # TODO: kick ball, use tool, do something?
+			_kick.rpc_id(1, -camera.global_transform.basis.z * kick_strength)
+
+
+@rpc("any_peer", "call_remote", "reliable")
+func _kick(direction: Vector3):
+	if not multiplayer.is_server():
+		return
+	
+	if detector.has_overlapping_bodies():
+		var balls := detector.get_overlapping_bodies().filter(
+			func(b): return b is Ball and b != self
+		) as Array[Node3D]
+		if balls.size() > 0:
+			balls.sort_custom(
+				func(a, b): return a.global_position.distance_to(self.global_position) < b.global_position.distance_to(self.global_position)
+			)
+			var ball := balls[0] as Ball
+			ball.apply_impulse(direction.normalized() * kick_strength, Vector3.ZERO)
+
 
 
 
@@ -126,6 +148,14 @@ func sync_move_direction(move_dir: Vector2, send_time: float):
 	bufferer.do_from_client(send_time, func():
 		direction = move_dir
 		)
+
+
+@rpc("authority", "call_remote", "unreliable_ordered", Util.UNRELIABLE_ORDERED)
+func sync_rotation(rot: Vector3, send_time: float):
+	bufferer.do_from_client(send_time, func():
+		rotation = rot
+		)
+
 
 # client -> server
 @rpc("authority", "call_remote", "reliable")
