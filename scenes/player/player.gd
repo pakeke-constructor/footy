@@ -8,7 +8,7 @@ extends CharacterBody3D
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 var player_id: int
 var camera: OrbitCamera
-@onready var raycast: RayCast3D = %RayCast3D
+@onready var detector: Area3D = %Detector
 
 var direction := Vector2(0,0)
 
@@ -102,22 +102,30 @@ const MOUSE_SENSITIVITY = 0.001
 
 
 func _input(event):
+	if not is_multiplayer_authority():
+		return
+
 	if event is InputEventMouseButton:
 		if event.button_index == 1:
-			_kick.rpc_id(1)
+			_kick.rpc_id(1, -camera.global_transform.basis.z * kick_strength)
 
 
 @rpc("any_peer", "call_remote", "reliable")
-func _kick():
+func _kick(direction: Vector3):
 	if not multiplayer.is_server():
 		return
 	
-	print("Checking for kick")
-	if raycast.is_colliding():
-		print("Raycast is colliding with: ", raycast.get_collider())
-		var collider = raycast.get_collider()
-		if collider is Ball:
-			print("Kicking the ball")
+	if detector.has_overlapping_bodies():
+		var balls := detector.get_overlapping_bodies().filter(
+			func(b): return b is Ball and b != self
+		) as Array[Node3D]
+		if balls.size() > 0:
+			balls.sort_custom(
+				func(a, b): return a.global_position.distance_to(self.global_position) < b.global_position.distance_to(self.global_position)
+			)
+			var ball := balls[0] as Ball
+			ball.apply_impulse(direction.normalized() * kick_strength, Vector3.ZERO)
+
 
 
 

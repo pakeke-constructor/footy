@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://cf1gm4p05fgdf"]
+[gd_scene load_steps=8 format=3 uid="uid://cf1gm4p05fgdf"]
 
 [ext_resource type="Script" uid="uid://dxihab7dsjjib" path="res://scenes/player/player.gd" id="1_wr5hl"]
 
@@ -11,6 +11,14 @@ albedo_color = Color(0.801414, 0.752535, 0.229286, 1)
 radius = 0.7
 
 [sub_resource type="BoxMesh" id="BoxMesh_4kuee"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_wr5hl"]
+radius = 1.5
+height = 1.5
+is_hemisphere = true
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_wr5hl"]
+points = PackedVector3Array(0.0454614, 0.327603, 1.46048, -0.275775, 0.00206459, -1.47195, -0.459623, 0.00254472, -1.42495, -0.0444296, 1.49701, -0.0441502, 1.47195, 0.00206459, -0.275775, -1.42492, 0.00240726, 0.459706, 1.06664, 1.00545, -0.310803, -1.06686, 1.05002, 0.0440113, 1.0595, 0.000887589, 1.0595, 0.396332, 1.17944, 0.836548, 0.178484, 0.872401, -1.20546, -0.666139, 0.87185, 1.0219, -1.02359, 0.694313, -0.845368, 0.90819, 0.148103, -1.18048, -0.595139, 0.0052628, 1.37393, 1.25672, 0.648958, 0.49352, -1.42492, 0.00240726, -0.459706, -0.175837, 1.31072, -0.703901, -0.353011, 1.35671, 0.529102, 0.615559, 1.35463, -0.175795, 0.759266, 0.649494, 1.11665, 0.884306, 0.871463, -0.83998, -1.11971, 0.514907, 0.850589, -0.492059, 0.738778, -1.20814, -1.40688, 0.511608, -0.0449337, -0.701224, 1.26523, -0.394421, 0.791034, 1.17843, 0.483211, 0.459623, 0.00254472, -1.42495, -0.178484, 0.872401, 1.20546, 1.36102, 0.375563, -0.49887, 0.459623, 0.00254472, 1.42495, 0.394366, 1.26516, -0.7014)
 
 [node name="Player" type="CharacterBody3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0528901, 0)
@@ -29,7 +37,15 @@ shape = SubResource("SphereShape3D_wr5hl")
 transform = Transform3D(0.4, 0, 0, 0, 0.166, 0, 0, 0, 0.345, 0, 0.554774, 0.213063)
 mesh = SubResource("BoxMesh_4kuee")
 
-[node name="RayCast3D" type="RayCast3D" parent="."]
+[node name="Detector" type="Area3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.636187, 0.494534)
-target_position = Vector3(0, 0, 1.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.54726, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Detector"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
+visible = false
+mesh = SubResource("SphereMesh_wr5hl")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Detector"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
+shape = SubResource("ConvexPolygonShape3D_wr5hl")
