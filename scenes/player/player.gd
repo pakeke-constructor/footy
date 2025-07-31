@@ -85,6 +85,7 @@ func _physics_process_client(_delta: float) -> void:
 	var input_dir := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
 	var move_dir := input_dir.rotated(-camera.global_rotation.y)
 	sync_move_direction.rpc(move_dir, time)
+	sync_rotation.rpc(rotation, time)
 	
 
 
@@ -139,6 +140,14 @@ func sync_move_direction(move_dir: Vector2, send_time: float):
 	bufferer.do_from_client(send_time, func():
 		direction = move_dir
 		)
+
+
+@rpc("authority", "call_remote", "unreliable_ordered", Util.UNRELIABLE_ORDERED)
+func sync_rotation(rot: Vector3, send_time: float):
+	bufferer.do_from_client(send_time, func():
+		rotation = rot
+		)
+
 
 # client -> server
 @rpc("authority", "call_remote", "reliable")
