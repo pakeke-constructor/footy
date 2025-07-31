@@ -1,4 +1,6 @@
-[gd_scene load_steps=6 format=3 uid="uid://dv8i53tcmku4j"]
+[gd_scene load_steps=7 format=3 uid="uid://dv8i53tcmku4j"]
+
+[ext_resource type="Script" uid="uid://crl87q66unadm" path="res://scripts/oneshot_sfx.gd" id="1_2fk53"]
 
 [sub_resource type="Gradient" id="Gradient_bhgup"]
 colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
@@ -20,10 +22,9 @@ color_ramp = SubResource("GradientTexture1D_ro38b")
 transparency = 4
 vertex_color_use_as_albedo = true
 
-[sub_resource type="SphereMesh" id="SphereMesh_2fk53"]
+[sub_resource type="BoxMesh" id="BoxMesh_bhgup"]
 material = SubResource("StandardMaterial3D_7u5gq")
-radius = 0.25
-height = 0.5
+size = Vector3(0.5, 0.5, 0.5)
 
 [node name="Kick" type="GPUParticles3D"]
 emitting = false
@@ -31,4 +32,5 @@ lifetime = 0.5
 one_shot = true
 explosiveness = 1.0
 process_material = SubResource("ParticleProcessMaterial_wmd1t")
-draw_pass_1 = SubResource("SphereMesh_2fk53")
+draw_pass_1 = SubResource("BoxMesh_bhgup")
+script = ExtResource("1_2fk53")
