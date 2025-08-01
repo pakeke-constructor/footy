@@ -71,7 +71,7 @@ func _physics_process_server(delta: float) -> void:
 	)
 
 
-func _physics_process_client(_delta: float) -> void:
+func _physics_process_client(delta: float) -> void:
 	if direction.length() > 0:
 		global_rotation.y = atan2(direction.x, direction.y)
 
@@ -88,6 +88,9 @@ func _physics_process_client(_delta: float) -> void:
 	move_dir = move_dir.normalized() # Normalize to prevent diagonal speed boost
 	if Input.is_action_pressed("sprint"):
 		move_dir *= sprint_multiplier
+		camera.fov = lerp(camera.fov, 90.0, delta * 5)
+	else:
+		camera.fov = lerp(camera.fov, 75.0, delta * 5)
 	sync_move_direction.rpc(move_dir, time)
 	sync_rotation.rpc(rotation, time)
 	
