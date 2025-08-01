@@ -116,7 +116,7 @@ func _input(event):
 	if event is InputEventMouseButton:
 		if event.button_index == 1 && event.pressed:
 			if current_item:
-				current_item._use()
+				current_item.use()
 			else:
 				_kick.rpc_id(1, -camera.global_transform.basis.z * kick_strength)
 				_kick_particles.rpc_id(1, GameManager.ball.position)
