@@ -4,6 +4,7 @@ extends CharacterBody3D
 @export var speed = 150.0
 @export var jump_velocity = 4.5
 @export var kick_strength = 5.0
+@export var sprint_multiplier = 1.5
 
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 var player_id: int
@@ -84,6 +85,8 @@ func _physics_process_client(_delta: float) -> void:
 
 	var input_dir := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
 	var move_dir := input_dir.rotated(-camera.global_rotation.y)
+	if Input.is_action_pressed("sprint"):
+		move_dir *= sprint_multiplier
 	sync_move_direction.rpc(move_dir, time)
 	sync_rotation.rpc(rotation, time)
 	
