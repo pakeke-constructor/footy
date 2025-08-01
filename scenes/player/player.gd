@@ -1,4 +1,4 @@
-
+class_name Player
 extends CharacterBody3D
 
 @export var speed = 150.0
@@ -116,7 +116,7 @@ func _input(event):
 	if event is InputEventMouseButton:
 		if event.button_index == 1 && event.pressed:
 			if current_item:
-				current_item.use()
+				current_item.use(self)
 			else:
 				_kick.rpc_id(1, -camera.global_transform.basis.z * kick_strength)
 				_kick_particles.rpc_id(1, GameManager.ball.position)

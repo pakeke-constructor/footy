@@ -4,5 +4,5 @@ extends Node3D
 
 
 ## Override this method to make the item do something when used.
-func use() -> void:
+func use(_player: Player) -> void:
 	pass
