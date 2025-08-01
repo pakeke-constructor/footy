@@ -85,6 +85,7 @@ func _physics_process_client(_delta: float) -> void:
 
 	var input_dir := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
 	var move_dir := input_dir.rotated(-camera.global_rotation.y)
+	move_dir = move_dir.normalized() # Normalize to prevent diagonal speed boost
 	if Input.is_action_pressed("sprint"):
 		move_dir *= sprint_multiplier
 	sync_move_direction.rpc(move_dir, time)
