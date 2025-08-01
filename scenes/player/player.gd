@@ -10,6 +10,7 @@ var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 var player_id: int
 var camera: OrbitCamera
 @onready var detector: Area3D = %Detector
+var current_item: Item
 
 var direction := Vector2(0,0)
 
@@ -114,8 +115,11 @@ func _input(event):
 
 	if event is InputEventMouseButton:
 		if event.button_index == 1 && event.pressed:
-			_kick.rpc_id(1, -camera.global_transform.basis.z * kick_strength)
-			_kick_particles.rpc_id(1, GameManager.ball.position)
+			if current_item:
+				current_item._use()
+			else:
+				_kick.rpc_id(1, -camera.global_transform.basis.z * kick_strength)
+				_kick_particles.rpc_id(1, GameManager.ball.position)
 
 
 @rpc("authority", "call_remote", "reliable")
