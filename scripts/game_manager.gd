@@ -34,18 +34,22 @@ func _physics_process(delta: float) -> void:
 		_update_match_time.rpc(match_time)
 
 
+@rpc("authority", "call_remote", "reliable")
 func score_team(team: Team) -> void:
-	assert(multiplayer.is_server())
 	team_scores[team] += 1
-	NetworkManager.debug("Team %s scored! Broadcasting team scores." % team)
-	_update_team_scores.rpc(team_scores)
+	NetworkManager.debug("Team %s scored!" % team)
+	if multiplayer.is_server():
+		NetworkManager.debug("Broadcasting score event.")
+		score_team.rpc(team)
 
 
+@rpc("authority", "call_remote", "reliable")
 func score_player(player_id: int) -> void:
-	assert(multiplayer.is_server())
 	player_scores[player_id] += 1
-	NetworkManager.debug("Player %s scored! Broadcasting player scores." % player_id)
-	_update_player_scores.rpc(player_scores)
+	NetworkManager.debug("Player %s scored!" % player_id)
+	if multiplayer.is_server():
+		NetworkManager.debug("Broadcasting score event.")
+		score_player.rpc(player_id)
 
 
 @rpc("authority", "call_local", "reliable")
