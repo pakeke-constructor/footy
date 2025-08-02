@@ -65,33 +65,21 @@ func respawn_ball() -> void:
 
 
 # TODO: Test with spawning multiple objects from the same scene path.
+@rpc("authority", "call_remote", "reliable")
 func spawn_object(scene_path: String, position: Vector3, rotation: Vector3 = Vector3.ZERO) -> void:
 	var scene = load(scene_path) as PackedScene
 	if not scene:
-		NetworkManager.error("Failed to load scene: %s" % scene_path)
+		push_error("Failed to load scene: %s" % scene_path)
 		return
-	
+
 	var instance = scene.instantiate() as Node
 	get_tree().current_scene.add_child(instance)
 	instance.global_position = position
 	instance.global_rotation = rotation
-	NetworkManager.debug("Spawned %s at %s, broadcasting spawn to other peers..." % [instance.name, position])
-	_spawn_object.rpc(scene_path, instance.global_position, instance.global_rotation, instance.name)
-
-
-@rpc("authority", "call_remote", "reliable")
-func _spawn_object(scene_path: String, position: Vector3, rotation: Vector3, name: String) -> void:
-	var scene = load(scene_path) as PackedScene
-	if not scene:
-		NetworkManager.error("Failed to load scene: %s" % scene_path)
-		return
-	
-	var instance = scene.instantiate() as Node
-	get_tree().current_scene.add_child(instance)
-	instance.global_position = position
-	instance.global_rotation = rotation
-	instance.name = name
 	NetworkManager.debug("Spawned %s at %s" % [instance.name, position])
+
+	if multiplayer.is_server():
+		spawn_object.rpc(scene_path, position, rotation)
 
 
 @rpc("authority", "call_local", "reliable")
