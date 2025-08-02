@@ -112,21 +112,25 @@ func _on_player_disconnected(id: int) -> void:
 		_update_player_scores.rpc(player_scores)
 
 
+@rpc("authority", "call_remote", "reliable")
 func start_match() -> void:
+	team_scores = {
+		Team.BLUE: 0,
+		Team.RED: 0
+	}
+	state = GameState.PLAYING
+	match_time = 0.0
+
 	if multiplayer.is_server():
-		team_scores = {Team.BLUE: 0, Team.RED: 0}
-		match_time = 0.0
-		state = GameState.PLAYING
-
-		_update_team_scores.rpc(team_scores)
-		_update_match_time.rpc(match_time)
-		_update_game_state.rpc(state)
+		start_match.rpc()
 
 
+@rpc("authority", "call_remote", "reliable")
 func stop_match() -> void:
+	state = GameState.STOPPED
+
 	if multiplayer.is_server():
-		state = GameState.STOPPED
-		_update_game_state.rpc(state)
+		stop_match.rpc()
 
 
 @rpc("authority", "call_remote", "reliable")
