@@ -35,4 +35,4 @@ func _on_body_entered(body: Node) -> void:
 			var force = direction * explosion_force * (1.0 - (distance / explosion_radius))
 			body.apply_impulse(force, global_position - body.global_position)
 			GameManager.spawn_object(explosion_effect.resource_path, global_position, Vector3.ZERO)
-			GameManager.destroy_object.rpc(get_path())
+			GameManager.destroy_object(get_path())

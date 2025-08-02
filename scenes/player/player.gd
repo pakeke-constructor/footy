@@ -115,7 +115,6 @@ func _input(event):
 	if event is InputEventMouseButton:
 		if event.button_index == 1 && event.pressed:
 			_kick.rpc_id(1, -camera.global_transform.basis.z * kick_strength)
-			_kick_particles.rpc_id(1, GameManager.ball.position)
 
 
 @rpc("authority", "call_remote", "reliable")
@@ -133,11 +132,7 @@ func _kick(direction: Vector3):
 			)
 			var ball := balls[0] as Ball
 			ball.apply_impulse(direction.normalized() * kick_strength, Vector3.ZERO)
-
-
-@rpc("authority", "call_local", "reliable")
-func _kick_particles(pos: Vector3):
-	GameManager.spawn_object("res://scenes/particles/kick/kick.tscn", pos, Vector3.ZERO)
+			GameManager.spawn_object("res://scenes/particles/kick/kick.tscn", ball.global_position, Vector3.ZERO)
 
 
 # server -> client
