@@ -1,6 +1,11 @@
 extends Node
 
 
+signal team_scored(team: Team)
+signal player_scored(player_id: int)
+signal match_started
+signal match_stopped
+
 enum Team {
 	BLUE,
 	RED
@@ -38,6 +43,7 @@ func _physics_process(delta: float) -> void:
 func score_team(team: Team) -> void:
 	team_scores[team] += 1
 	NetworkManager.debug("Team %s scored!" % team)
+	team_scored.emit(team)
 	if multiplayer.is_server():
 		NetworkManager.debug("Broadcasting score event.")
 		score_team.rpc(team)
@@ -47,6 +53,7 @@ func score_team(team: Team) -> void:
 func score_player(player_id: int) -> void:
 	player_scores[player_id] += 1
 	NetworkManager.debug("Player %s scored!" % player_id)
+	player_scored.emit(player_id)
 	if multiplayer.is_server():
 		NetworkManager.debug("Broadcasting score event.")
 		score_player.rpc(player_id)
@@ -120,6 +127,7 @@ func start_match() -> void:
 	}
 	state = GameState.PLAYING
 	match_time = 0.0
+	match_started.emit()
 
 	if multiplayer.is_server():
 		start_match.rpc()
@@ -128,6 +136,7 @@ func start_match() -> void:
 @rpc("authority", "call_remote", "reliable")
 func stop_match() -> void:
 	state = GameState.STOPPED
+	match_stopped.emit()
 
 	if multiplayer.is_server():
 		stop_match.rpc()

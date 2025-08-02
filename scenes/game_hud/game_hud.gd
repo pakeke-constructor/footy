@@ -6,11 +6,14 @@ extends Control
 
 
 func _ready() -> void:
-	timer.timeout.connect(_on_timer_timeout)
-	_on_timer_timeout()
+	timer.timeout.connect(_update_label)
+	GameManager.team_scored.connect(func (team: GameManager.Team) -> void:
+		_update_label()
+	)
+	_update_label()
 
 
-func _on_timer_timeout() -> void:
+func _update_label() -> void:
 	var score_text = "BLUE: %d - RED: %d" % [
 		GameManager.team_scores[GameManager.Team.BLUE],
 		GameManager.team_scores[GameManager.Team.RED]
