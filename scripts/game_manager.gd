@@ -93,15 +93,17 @@ func spawn_object(scene_path: String, position: Vector3, rotation: Vector3 = Vec
 		spawn_object.rpc(scene_path, position, rotation)
 
 
-@rpc("authority", "call_local", "reliable")
+@rpc("authority", "call_remote", "reliable")
 func destroy_object(node_path: NodePath) -> void:
 	var node = get_tree().current_scene.get_node(node_path)
 	if not node:
-		NetworkManager.error("Node not found: %s" % node_path)
+		NetworkManager.debug("Node not found: %s" % node_path)
 		return
 	
 	node.queue_free()
 	NetworkManager.debug("Destroyed object at path: %s" % node_path)
+	if multiplayer.is_server():
+		destroy_object.rpc(node_path)
 
 
 func _on_player_connected(id: int) -> void:
