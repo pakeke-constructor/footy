@@ -51,6 +51,8 @@ func score_team(team: Team) -> void:
 
 @rpc("authority", "call_remote", "reliable")
 func score_player(player_id: int) -> void:
+	if player_id == -1:
+		return
 	player_scores[player_id] += 1
 	NetworkManager.debug("Player %s scored!" % player_id)
 	player_scored.emit(player_id)
