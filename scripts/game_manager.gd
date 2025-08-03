@@ -59,10 +59,13 @@ func score_player(player_id: int) -> void:
 		score_player.rpc(player_id)
 
 
-@rpc("authority", "call_local", "reliable")
+@rpc("authority", "call_remote", "reliable")
 func respawn_ball() -> void:
 	if not ball:
 		return
+	
+	if multiplayer.is_server():
+		respawn_ball.rpc()
 
 	var ball_parent = ball.get_parent()
 	ball_parent.remove_child(ball)

@@ -17,6 +17,6 @@ func _on_body_entered(body: Node3D) -> void:
 			GameManager.score_team(team)
 			if body.last_player_id != -1:
 				GameManager.score_player(body.last_player_id)
-			GameManager.respawn_ball.rpc()
+			GameManager.respawn_ball()
 
 
