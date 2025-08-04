@@ -19,7 +19,7 @@ void vertex() {
     // Extrude vertices along normal for shell layering
     float shell_height = float(shell_index) / float(num_shells);
     VERTEX += NORMAL * grass_length * shell_height;
-    
+
     world_position = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
     world_normal = normalize((MODEL_MATRIX * vec4(NORMAL, 0.0)).xyz);
 }
@@ -40,16 +40,16 @@ float hash(vec2 p) {
 float noise(vec2 p) {
     vec2 i = floor(p);
     vec2 f = fract(p);
-    
+
     // Smooth interpolation
     vec2 u = f * f * (3.0 - 2.0 * f);
-    
+
     // Four corners of the grid cell
     float a = hash(i);
     float b = hash(i + vec2(1.0, 0.0));
     float c = hash(i + vec2(0.0, 1.0));
     float d = hash(i + vec2(1.0, 1.0));
-    
+
     // Bilinear interpolation
     return mix(mix(a, b, u.x), mix(c, d, u.x), u.y);
 }
@@ -60,21 +60,21 @@ void fragment() {
     vec2 grid_uv = UV * grass_grid_size;
     int x = int(floor(grid_uv.x));
     int y = int(floor(grid_uv.y));
-    
+
     vec2 input = vec2(float(x), float(y));
 
     float big_random = noise(input / big_noise_period);
     float random = random(input)*0.7 + big_random*0.3;
-    
+
     // grass strand height (0 to num_shells)
     int height = int(floor(random * float(num_shells + 1) * density));
-    
+
     // Taper grass as they get higher
     float shell_ratio = float(shell_index) / float(num_shells);
 
     vec4 pitch_color = texture(pitch_texture, UV);
     bool is_line = length(pitch_color.xyz) < 0.5;
-    
+
     if (height < shell_index) {
         discard;
     } else {
@@ -89,7 +89,7 @@ void fragment() {
 
         // Darken higher shells slightly for depth
         final_color *= (0.2 + shell_ratio);
-        
+
         ALBEDO = final_color;
         ALPHA = 1.0 - shell_ratio * 0.5; // Fade out higher shells
     }
