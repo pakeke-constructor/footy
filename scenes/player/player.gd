@@ -112,7 +112,7 @@ func _input(event):
 
 	if event is InputEventMouseButton:
 		if event.button_index == 1 && event.pressed:
-			_kick.rpc_id(1, -camera.global_transform.basis.z * kick_strength)
+			_kick.rpc(-camera.global_transform.basis.z * kick_strength)
 
 
 @rpc("authority", "call_remote", "reliable")
