@@ -1,29 +1,29 @@
 extends Control
 
 
-@onready var score_label: Label = $ScoreLabel
+@onready var score_label_blue: Label = %ScoreLabelBlue
+@onready var score_label_red: Label = %ScoreLabelRed
+@onready var time_label: Label = %TimeLabel
+@onready var goal_label_container: Control = %GoalLabelContainer
 @onready var timer: Timer = $Timer
 
 
 func _ready() -> void:
-	timer.timeout.connect(_update_label)
-	GameManager.team_scored.connect(func (team: GameManager.Team) -> void:
-		_update_label()
-	)
-	_update_label()
+	GameManager.team_scored.connect(_on_team_scored)
+	timer.timeout.connect(_on_timer_timeout)
 
 
-func _update_label() -> void:
-	var score_text = "BLUE: %d - RED: %d" % [
-		GameManager.team_scores[GameManager.Team.BLUE],
-		GameManager.team_scores[GameManager.Team.RED]
-	]
-	
-	# Add match timer if the game is in progress
+func _on_team_scored(_team: GameManager.Team) -> void:
+	score_label_blue.text = str(GameManager.team_scores[GameManager.Team.BLUE])
+	score_label_red.text = str(GameManager.team_scores[GameManager.Team.RED])
+
+	goal_label_container.visible = true
+	await get_tree().create_timer(3.0).timeout
+	goal_label_container.visible = false
+
+
+func _on_timer_timeout() -> void:
 	if GameManager.state == GameManager.GameState.PLAYING:
-		@warning_ignore("integer_division")
-		var minutes: int = int(GameManager.match_time) / 60
+		var minutes: int = int(GameManager.match_time / 60)
 		var seconds: int = int(GameManager.match_time) % 60
-		score_text += "\n%02d:%02d" % [minutes, seconds]
-	
-	score_label.text = score_text
+		time_label.text = "%02d:%02d" % [minutes, seconds]

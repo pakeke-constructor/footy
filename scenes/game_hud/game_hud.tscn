@@ -1,9 +1,18 @@
-[gd_scene load_steps=5 format=3 uid="uid://cg853y3yh4rlx"]
+[gd_scene load_steps=8 format=3 uid="uid://cg853y3yh4rlx"]
 
 [ext_resource type="Script" uid="uid://upywlm524htm" path="res://scenes/game_hud/game_hud.gd" id="1_7s1mr"]
 [ext_resource type="Texture2D" uid="uid://bmahfeglerxg5" path="res://textures/vignette.png" id="2_nfw3n"]
 [ext_resource type="Script" uid="uid://bx7salvcww6fm" path="res://scripts/ball_indicator_renderer.gd" id="3_aiwwf"]
 [ext_resource type="Texture2D" uid="uid://sjij5f3r8yqe" path="res://addons/kenney_game-icons/PNG/Black/1x/arrowUp.png" id="4_kum1k"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_kum1k"]
+font_size = 24
+
+[sub_resource type="LabelSettings" id="LabelSettings_aiwwf"]
+font_size = 32
+
+[sub_resource type="LabelSettings" id="LabelSettings_nfw3n"]
+font_size = 40
 
 [node name="GameHud" type="Control"]
 layout_mode = 3
@@ -43,17 +52,106 @@ grow_vertical = 2
 script = ExtResource("3_aiwwf")
 arrow_texture = ExtResource("4_kum1k")
 
-[node name="ScoreLabel" type="Label" parent="."]
-unique_name_in_owner = true
+[node name="Timer" type="Timer" parent="."]
+autostart = true
+
+[node name="ScoreViewContainer" type="VBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -20.0
 offset_right = 20.0
-offset_bottom = 23.0
+offset_bottom = 45.0
 grow_horizontal = 2
+
+[node name="PanelContainer2" type="PanelContainer" parent="ScoreViewContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ScoreViewContainer/PanelContainer2"]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ScoreViewContainer/PanelContainer2/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="PanelContainer" type="PanelContainer" parent="ScoreViewContainer/PanelContainer2/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ColorRect" type="ColorRect" parent="ScoreViewContainer/PanelContainer2/HBoxContainer/VBoxContainer/PanelContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+color = Color(0.22, 0.22, 1, 1)
+
+[node name="Label" type="Label" parent="ScoreViewContainer/PanelContainer2/HBoxContainer/VBoxContainer/PanelContainer"]
+layout_mode = 2
+text = "Blue"
+label_settings = SubResource("LabelSettings_kum1k")
+
+[node name="ScoreLabelBlue" type="Label" parent="ScoreViewContainer/PanelContainer2/HBoxContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 1
+text = "0"
+label_settings = SubResource("LabelSettings_aiwwf")
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="ScoreViewContainer/PanelContainer2/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="PanelContainer" type="PanelContainer" parent="ScoreViewContainer/PanelContainer2/HBoxContainer/VBoxContainer2"]
+layout_mode = 2
+
+[node name="ColorRect" type="ColorRect" parent="ScoreViewContainer/PanelContainer2/HBoxContainer/VBoxContainer2/PanelContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+color = Color(1, 0.22, 0.22, 1)
+
+[node name="Label" type="Label" parent="ScoreViewContainer/PanelContainer2/HBoxContainer/VBoxContainer2/PanelContainer"]
+layout_mode = 2
+text = "Red"
+label_settings = SubResource("LabelSettings_kum1k")
+
+[node name="ScoreLabelRed" type="Label" parent="ScoreViewContainer/PanelContainer2/HBoxContainer/VBoxContainer2"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 1
+text = "0"
+label_settings = SubResource("LabelSettings_aiwwf")
+
+[node name="PanelContainer" type="PanelContainer" parent="ScoreViewContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="TimeLabel" type="Label" parent="ScoreViewContainer/PanelContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "00:00"
 horizontal_alignment = 1
 
-[node name="Timer" type="Timer" parent="."]
-autostart = true
+[node name="GoalLabelContainer" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="GoalLabelContainer"]
+layout_mode = 2
+text = "GOAL ! ! ! !"
+label_settings = SubResource("LabelSettings_nfw3n")
+horizontal_alignment = 1
