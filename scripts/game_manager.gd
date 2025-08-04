@@ -1,6 +1,11 @@
 extends Node
 
 
+signal team_scored(team: Team)
+signal player_scored(player_id: int)
+signal match_started
+signal match_stopped
+
 enum Team {
 	BLUE,
 	RED
@@ -34,24 +39,35 @@ func _physics_process(delta: float) -> void:
 		_update_match_time.rpc(match_time)
 
 
+@rpc("authority", "call_remote", "reliable")
 func score_team(team: Team) -> void:
-	assert(multiplayer.is_server())
 	team_scores[team] += 1
-	NetworkManager.debug("Team %s scored! Broadcasting team scores." % team)
-	_update_team_scores.rpc(team_scores)
+	NetworkManager.debug("Team %s scored!" % team)
+	team_scored.emit(team)
+	if multiplayer.is_server():
+		NetworkManager.debug("Broadcasting score event.")
+		score_team.rpc(team)
 
 
+@rpc("authority", "call_remote", "reliable")
 func score_player(player_id: int) -> void:
-	assert(multiplayer.is_server())
+	if player_id == -1:
+		return
 	player_scores[player_id] += 1
-	NetworkManager.debug("Player %s scored! Broadcasting player scores." % player_id)
-	_update_player_scores.rpc(player_scores)
+	NetworkManager.debug("Player %s scored!" % player_id)
+	player_scored.emit(player_id)
+	if multiplayer.is_server():
+		NetworkManager.debug("Broadcasting score event.")
+		score_player.rpc(player_id)
 
 
-@rpc("authority", "call_local", "reliable")
+@rpc("authority", "call_remote", "reliable")
 func respawn_ball() -> void:
 	if not ball:
 		return
+	
+	if multiplayer.is_server():
+		respawn_ball.rpc()
 
 	var ball_parent = ball.get_parent()
 	ball_parent.remove_child(ball)
@@ -65,44 +81,34 @@ func respawn_ball() -> void:
 
 
 # TODO: Test with spawning multiple objects from the same scene path.
+@rpc("authority", "call_remote", "reliable")
 func spawn_object(scene_path: String, position: Vector3, rotation: Vector3 = Vector3.ZERO) -> void:
 	var scene = load(scene_path) as PackedScene
 	if not scene:
-		NetworkManager.error("Failed to load scene: %s" % scene_path)
+		push_error("Failed to load scene: %s" % scene_path)
 		return
-	
+
 	var instance = scene.instantiate() as Node
 	get_tree().current_scene.add_child(instance)
 	instance.global_position = position
 	instance.global_rotation = rotation
-	NetworkManager.debug("Spawned %s at %s, broadcasting spawn to other peers..." % [instance.name, position])
-	_spawn_object.rpc(scene_path, instance.global_position, instance.global_rotation, instance.name)
+	NetworkManager.debug("Spawned %s at %s" % [instance.name, position])
+
+	if multiplayer.is_server():
+		spawn_object.rpc(scene_path, position, rotation)
 
 
 @rpc("authority", "call_remote", "reliable")
-func _spawn_object(scene_path: String, position: Vector3, rotation: Vector3, name: String) -> void:
-	var scene = load(scene_path) as PackedScene
-	if not scene:
-		NetworkManager.error("Failed to load scene: %s" % scene_path)
-		return
-	
-	var instance = scene.instantiate() as Node
-	get_tree().current_scene.add_child(instance)
-	instance.global_position = position
-	instance.global_rotation = rotation
-	instance.name = name
-	NetworkManager.debug("Spawned %s at %s" % [instance.name, position])
-
-
-@rpc("authority", "call_local", "reliable")
 func destroy_object(node_path: NodePath) -> void:
 	var node = get_tree().current_scene.get_node(node_path)
 	if not node:
-		NetworkManager.error("Node not found: %s" % node_path)
+		NetworkManager.debug("Node not found: %s" % node_path)
 		return
 	
 	node.queue_free()
 	NetworkManager.debug("Destroyed object at path: %s" % node_path)
+	if multiplayer.is_server():
+		destroy_object.rpc(node_path)
 
 
 func _on_player_connected(id: int) -> void:
@@ -120,21 +126,27 @@ func _on_player_disconnected(id: int) -> void:
 		_update_player_scores.rpc(player_scores)
 
 
+@rpc("authority", "call_remote", "reliable")
 func start_match() -> void:
+	team_scores = {
+		Team.BLUE: 0,
+		Team.RED: 0
+	}
+	state = GameState.PLAYING
+	match_time = 0.0
+	match_started.emit()
+
 	if multiplayer.is_server():
-		team_scores = {Team.BLUE: 0, Team.RED: 0}
-		match_time = 0.0
-		state = GameState.PLAYING
-
-		_update_team_scores.rpc(team_scores)
-		_update_match_time.rpc(match_time)
-		_update_game_state.rpc(state)
+		start_match.rpc()
 
 
+@rpc("authority", "call_remote", "reliable")
 func stop_match() -> void:
+	state = GameState.STOPPED
+	match_stopped.emit()
+
 	if multiplayer.is_server():
-		state = GameState.STOPPED
-		_update_game_state.rpc(state)
+		stop_match.rpc()
 
 
 @rpc("authority", "call_remote", "reliable")

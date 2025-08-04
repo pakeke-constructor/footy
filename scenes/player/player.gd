@@ -1,12 +1,12 @@
-
+class_name Player
 extends CharacterBody3D
 
-@export var speed = 150.0
-@export var jump_velocity = 4.5
-@export var kick_strength = 5.0
-@export var sprint_multiplier = 1.5
+@export var speed := 150.0
+@export var jump_velocity := 4.5
+@export var kick_strength := 5.0
+@export var sprint_multiplier := 1.5
 
-var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
+var gravity := ProjectSettings.get_setting("physics/3d/default_gravity") as float
 var player_id: int
 var camera: OrbitCamera
 @onready var detector: Area3D = %Detector
@@ -14,8 +14,6 @@ var camera: OrbitCamera
 var direction := Vector2(0,0)
 
 var bufferer: Bufferer
-
-
 
 
 func _ready():
@@ -98,7 +96,7 @@ func _physics_process_client(delta: float) -> void:
 
 
 
-func _physics_process(delta):
+func _physics_process(delta: float) -> void:
 	if multiplayer.is_server():
 		_physics_process_server(delta)
 	else:
@@ -115,11 +113,10 @@ func _input(event):
 	if event is InputEventMouseButton:
 		if event.button_index == 1 && event.pressed:
 			_kick.rpc_id(1, -camera.global_transform.basis.z * kick_strength)
-			_kick_particles.rpc_id(1, GameManager.ball.position)
 
 
 @rpc("authority", "call_remote", "reliable")
-func _kick(direction: Vector3):
+func _kick(kick_dir: Vector3):
 	if not multiplayer.is_server():
 		return
 	
@@ -132,12 +129,9 @@ func _kick(direction: Vector3):
 				func(a, b): return a.global_position.distance_to(self.global_position) < b.global_position.distance_to(self.global_position)
 			)
 			var ball := balls[0] as Ball
-			ball.apply_impulse(direction.normalized() * kick_strength, Vector3.ZERO)
-
-
-@rpc("authority", "call_local", "reliable")
-func _kick_particles(pos: Vector3):
-	GameManager.spawn_object("res://scenes/particles/kick/kick.tscn", pos, Vector3.ZERO)
+			ball.last_player_id = player_id
+			ball.apply_impulse(kick_dir.normalized() * kick_strength, Vector3.ZERO)
+			GameManager.spawn_object("res://scenes/particles/kick/kick.tscn", ball.global_position, Vector3.ZERO)
 
 
 # server -> client
@@ -149,7 +143,6 @@ func sync_physics_state(pos: Vector3, lin_vel: Vector3, move_dir: Vector2, send_
 		# dont lerp direction, just set it directly.
 		self.direction = move_dir
 	)
-
 
 
 # client -> server
