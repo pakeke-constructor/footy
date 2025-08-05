@@ -33,6 +33,8 @@ const CLIENT_RTT = 0.03
 signal player_connected(id: int)
 ## A player disconnected from the server.
 signal player_disconnected(id: int)
+## The server has connected to the client.
+signal server_connected()
 ## The server has disconnected.
 signal server_disconnected()
 
@@ -126,6 +128,7 @@ func _on_connected_to_server() -> void:
 	players = []
 	for i in multiplayer.get_peers():
 		players.append(i)
+	server_connected.emit()
 
 
 func _on_connection_failed() -> void:

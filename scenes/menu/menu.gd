@@ -12,6 +12,7 @@ extends Control
 func _ready():
 	host_button.pressed.connect(_on_host_pressed)
 	join_button.pressed.connect(_on_join_pressed)
+	NetworkManager.server_connected.connect(_on_server_connected)
 
 	await get_tree().root.ready
 
@@ -28,4 +29,7 @@ func _on_host_pressed():
 
 func _on_join_pressed():
 	NetworkManager.join_game(ip_input.text if ip_input.text != "" else "127.0.0.1")
+
+
+func _on_server_connected():
 	get_tree().change_scene_to_packed(world_scene)
