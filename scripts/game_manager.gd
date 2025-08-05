@@ -22,6 +22,7 @@ var team_scores: Dictionary[Team, int] = {
 }
 
 var player_scores: Dictionary[int, int] = {}
+var player_teams: Dictionary[int, Team] = {}
 
 var state: GameState = GameState.STOPPED
 var ball: Ball
@@ -37,6 +38,10 @@ func _physics_process(delta: float) -> void:
 	if multiplayer.is_server() and state == GameState.PLAYING:
 		match_time += delta
 		_update_match_time.rpc(match_time)
+
+
+func join_team(team: Team) -> void:
+	pass # TODO: Implement
 
 
 @rpc("authority", "call_remote", "reliable")

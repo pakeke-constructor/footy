@@ -20,10 +20,4 @@ func _input(event):
 
 		# todo: add more debug-tools here.
 
-	elif event is InputEventMouseButton:
-		if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED and (not multiplayer.is_server()):
-			# lock onto the screen! (Mouse is unlocked for some reason)
-			# Dont lock mouse if we are on server-side.
-			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-
 

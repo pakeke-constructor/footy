@@ -1,9 +1,11 @@
-[gd_scene load_steps=13 format=3 uid="uid://c4r7etcwy3mie"]
+[gd_scene load_steps=15 format=3 uid="uid://c4r7etcwy3mie"]
 
 [ext_resource type="Script" uid="uid://tehm2n46sp2a" path="res://scenes/world/world.gd" id="1_5qbjp"]
 [ext_resource type="Script" uid="uid://bcbk6lo6uo5r5" path="res://scenes/world/debug.gd" id="2_1oml7"]
 [ext_resource type="PackedScene" uid="uid://cg853y3yh4rlx" path="res://scenes/game_hud/game_hud.tscn" id="2_gbddb"]
+[ext_resource type="PackedScene" uid="uid://cf1gm4p05fgdf" path="res://scenes/player/Player.tscn" id="2_qh0kd"]
 [ext_resource type="PackedScene" uid="uid://brj6bimngicos" path="res://scenes/world/goal/goal.tscn" id="3_6eebf"]
+[ext_resource type="PackedScene" uid="uid://dd0ceu3vsti2t" path="res://scenes/objects/ball/Ball.tscn" id="3_yr1n6"]
 [ext_resource type="PackedScene" uid="uid://db5bq6orvbfxs" path="res://scenes/world/pitch/Pitch.tscn" id="5_qxiha"]
 [ext_resource type="PackedScene" uid="uid://07fuc0ukbin4" path="res://scenes/objects/landmine/landmine.tscn" id="6_qxiha"]
 
@@ -32,8 +34,46 @@ volumetric_fog_length = 183.72
 
 [node name="World" type="Node3D"]
 script = ExtResource("1_5qbjp")
+player_scene = ExtResource("2_qh0kd")
+ball_scene = ExtResource("3_yr1n6")
+
+[node name="OverviewCamera" type="Camera3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 29.1863, 0)
 
 [node name="GameHud" parent="." instance=ExtResource("2_gbddb")]
+unique_name_in_owner = true
+visible = false
+
+[node name="TeamSelector" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="TeamSelector"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="JoinBlue" type="Button" parent="TeamSelector/HBoxContainer"]
+layout_mode = 2
+text = "Join Blue"
+
+[node name="JoinRed" type="Button" parent="TeamSelector/HBoxContainer"]
+layout_mode = 2
+text = "Join Red"
 
 [node name="WallBack" type="StaticBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 20, 0, 0, 0, 40, 29.601, 8.8883, 0.0886364)

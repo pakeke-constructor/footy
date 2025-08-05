@@ -128,6 +128,7 @@ func _on_connected_to_server() -> void:
 	players = []
 	for i in multiplayer.get_peers():
 		players.append(i)
+	players.append(multiplayer.get_unique_id())
 	server_connected.emit()
 
 
