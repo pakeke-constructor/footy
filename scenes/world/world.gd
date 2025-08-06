@@ -6,14 +6,12 @@ extends Node3D
 
 @onready var overview_camera: Camera3D = %OverviewCamera
 @onready var game_hud: Control = %GameHud
-@onready var team_selector: Control = %TeamSelector
-@onready var join_blue_button: Button = %JoinBlue
-@onready var join_red_button: Button = %JoinRed
+@onready var lobby_screen: Control = %LobbyScreen
+@onready var join_button: Button = %JoinButton
 
 
 func _ready() -> void:
-	join_blue_button.pressed.connect(_on_join_blue_pressed)
-	join_red_button.pressed.connect(_on_join_red_pressed)
+	join_button.pressed.connect(_on_join_pressed)
 
 	for id in NetworkManager.players:
 		if id != multiplayer.get_unique_id():
@@ -22,17 +20,10 @@ func _ready() -> void:
 	GameManager.spawn_object(ball_scene.resource_path, Vector3.ZERO, Vector3.ZERO)
 
 
-func _on_join_blue_pressed() -> void:
-	GameManager.join_team(GameManager.Team.BLUE)
+func _on_join_pressed() -> void:
+	# TODO: Assign team based on player count on each teams
 	_spawn_player.rpc_id(1, multiplayer.get_unique_id())
-	team_selector.hide()
-	game_hud.show()
-
-
-func _on_join_red_pressed() -> void:
-	GameManager.join_team(GameManager.Team.RED)
-	_spawn_player.rpc_id(1, multiplayer.get_unique_id())
-	team_selector.hide()
+	lobby_screen.hide()
 	game_hud.show()
 
 

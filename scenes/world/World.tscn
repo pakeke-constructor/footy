@@ -45,7 +45,7 @@ transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 29.
 unique_name_in_owner = true
 visible = false
 
-[node name="TeamSelector" type="Control" parent="."]
+[node name="LobbyScreen" type="Control" parent="."]
 unique_name_in_owner = true
 layout_mode = 3
 anchors_preset = 15
@@ -54,29 +54,21 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="TeamSelector"]
+[node name="JoinButton" type="Button" parent="LobbyScreen"]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -20.0
-offset_top = -20.0
-offset_right = 20.0
-offset_bottom = 20.0
+offset_left = -4.0
+offset_top = -4.0
+offset_right = 4.0
+offset_bottom = 4.0
 grow_horizontal = 2
 grow_vertical = 2
-
-[node name="JoinBlue" type="Button" parent="TeamSelector/HBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Join Blue"
-
-[node name="JoinRed" type="Button" parent="TeamSelector/HBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Join Red"
+text = "Join Game"
 
 [node name="WallBack" type="StaticBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 20, 0, 0, 0, 40, 29.601, 8.8883, 0.0886364)
