@@ -19,7 +19,7 @@ func _ready() -> void:
 		if id != multiplayer.get_unique_id():
 			_spawn_player(id)
 	
-	_spawn_ball()
+	GameManager.spawn_object(ball_scene.resource_path, Vector3.ZERO, Vector3.ZERO)
 
 
 func _on_join_blue_pressed() -> void:
@@ -34,18 +34,6 @@ func _on_join_red_pressed() -> void:
 	_spawn_player.rpc_id(1, multiplayer.get_unique_id())
 	team_selector.hide()
 	game_hud.show()
-
-
-@rpc("any_peer", "call_remote", "reliable")
-func _spawn_ball() -> void:
-	if get_node_or_null("Ball"):
-		NetworkManager.debug("Ball already exists, skipping spawn.")
-		return
-	
-	var ball = ball_scene.instantiate() as Ball
-	ball.name = "Ball"
-	add_child(ball)
-	NetworkManager.debug("Spawning ball %s" % ball.name)
 
 
 @rpc("any_peer", "call_remote", "reliable")
