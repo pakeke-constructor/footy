@@ -20,11 +20,11 @@ func _ready() -> void:
 
 
 func _on_join_blue_pressed() -> void:
-	pass # TODO: Implement
+	GameManager.join_team(GameManager.Team.BLUE)
 
 
 func _on_join_red_pressed() -> void:
-	pass # TODO: Implement
+	GameManager.join_team(GameManager.Team.RED)
 
 
 @rpc("authority", "call_remote", "reliable")

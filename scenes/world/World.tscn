@@ -68,10 +68,12 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="JoinBlue" type="Button" parent="TeamSelector/HBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "Join Blue"
 
 [node name="JoinRed" type="Button" parent="TeamSelector/HBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "Join Red"
 
