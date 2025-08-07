@@ -12,6 +12,7 @@ extends Node3D
 
 func _ready() -> void:
 	join_button.pressed.connect(_on_join_pressed)
+	NetworkManager.player_disconnected.connect(_despawn_player)
 
 	for id in NetworkManager.players:
 		if id != multiplayer.get_unique_id():
