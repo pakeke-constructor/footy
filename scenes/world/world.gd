@@ -9,9 +9,12 @@ extends Node3D
 @onready var lobby_screen: Control = %LobbyScreen
 @onready var join_button: Button = %JoinButton
 
+var ingame_players: Array[int] = []
+
 
 func _ready() -> void:
 	join_button.pressed.connect(_on_join_pressed)
+	NetworkManager.player_connected.connect(_on_player_connected)
 	NetworkManager.player_disconnected.connect(_despawn_player)
 
 	for id in NetworkManager.players:
@@ -27,6 +30,14 @@ func _on_join_pressed() -> void:
 	_spawn_player.rpc_id(1, multiplayer.get_unique_id())
 	lobby_screen.hide()
 	game_hud.show()
+
+
+func _on_player_connected(id: int) -> void:
+	if multiplayer.is_server():
+		for pid in ingame_players:
+			if pid != id:
+				NetworkManager.debug("Spawning player %d for new player %d" % [pid, id])
+				_spawn_player.rpc_id(id, pid)
 
 
 @rpc("any_peer", "call_remote", "reliable")
@@ -48,6 +59,7 @@ func _spawn_player(id: int) -> void:
 	player.name = "Player_%d" % id
 	player.set_multiplayer_authority(id)
 	add_child(player)
+	ingame_players.append(id)
 	NetworkManager.debug("Spawning player %s" % player.name)
 
 	if multiplayer.is_server():
@@ -59,4 +71,5 @@ func _despawn_player(id: int) -> void:
 	var player = get_node_or_null("Player_%d" % id)
 	if player:
 		player.queue_free()
+		ingame_players.erase(id)
 		NetworkManager.debug("Despawning player %s" % player.name)
