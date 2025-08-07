@@ -19,6 +19,7 @@ func _ready() -> void:
 			_spawn_player(id)
 	
 	GameManager.spawn_object(ball_scene.resource_path, Vector3.ZERO, Vector3.ZERO)
+	GameManager.ball = get_node_or_null("Ball")
 
 
 func _on_join_pressed() -> void:
