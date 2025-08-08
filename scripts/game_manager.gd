@@ -66,19 +66,26 @@ func score_player(player_id: int) -> void:
 		score_player.rpc(player_id)
 
 
+func _create_new_ball(pos: Vector3):
+	var ball_scene = preload("res://scenes/objects/ball/Ball.tscn")
+	ball = ball_scene.instantiate()
+	ball.global_position = pos
+	get_tree().current_scene.add_child(ball)
+
+
 func respawn_ball() -> void:
 	assert(multiplayer.is_server())
 	if not ball:
-		var ball_scene = preload("res://scenes/objects/ball/Ball.tscn")
-		ball = ball_scene.instantiate()
-		get_tree().current_scene.add_child(ball)
+		var ball_pos: Vector3 = Vector3(randf_range(-10, 10), 5, randf_range(-10, 10))
+		_create_new_ball(ball_pos)
 		return
 	
 	var ball_parent = ball.get_parent()
-	ball_parent.remove_child(ball)
+	ball.queue_free()
 	await get_tree().create_timer(3.0).timeout
+	var rand_pos: Vector3 = Vector3(randf_range(-10, 10), 5, randf_range(-10, 10))
+	_create_new_ball(rand_pos)
 	ball_parent.add_child(ball)
-	ball.global_position = Vector3(randf_range(-10, 10), 5, randf_range(-10, 10))
 	ball.linear_velocity = Vector3.ZERO
 	ball.angular_velocity = Vector3.ZERO
 	ball.last_player_id = -1
