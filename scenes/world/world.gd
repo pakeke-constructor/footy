@@ -17,12 +17,13 @@ func _ready() -> void:
 	NetworkManager.player_connected.connect(_on_player_connected)
 	NetworkManager.player_disconnected.connect(_despawn_player)
 
-	for id in NetworkManager.players:
-		if id != multiplayer.get_unique_id():
-			_spawn_player(id)
-	
-	GameManager.spawn_object(ball_scene.resource_path, Vector3.ZERO, Vector3.ZERO)
-	GameManager.ball = get_node_or_null("Ball")
+	if multiplayer.is_server():
+		for id in NetworkManager.players:
+			if id != multiplayer.get_unique_id():
+				_spawn_player(id)
+		
+		GameManager.respawn_ball()
+		GameManager.ball = get_node_or_null("Ball")
 
 
 func _on_join_pressed() -> void:

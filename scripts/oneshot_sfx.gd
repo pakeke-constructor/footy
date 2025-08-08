@@ -7,4 +7,4 @@ func _ready() -> void:
 
 
 func _on_finished() -> void:
-	GameManager.destroy_object(get_path())
+	queue_free()

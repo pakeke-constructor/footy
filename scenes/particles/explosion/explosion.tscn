@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3 uid="uid://dao40bl3kdgtw"]
 
-[ext_resource type="Script" uid="uid://crl87q66unadm" path="res://scripts/oneshot_sfx.gd" id="1_pybja"]
+[ext_resource type="Script" path="res://scripts/oneshot_sfx.gd" id="1_pybja"]
 
 [sub_resource type="Curve" id="Curve_pybja"]
 _data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
