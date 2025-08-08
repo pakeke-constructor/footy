@@ -22,6 +22,7 @@ var team_scores: Dictionary[Team, int] = {
 }
 
 var player_scores: Dictionary[int, int] = {}
+var player_teams: Dictionary[int, Team] = {}
 
 var state: GameState = GameState.STOPPED
 var ball: Ball
@@ -37,6 +38,10 @@ func _physics_process(delta: float) -> void:
 	if multiplayer.is_server() and state == GameState.PLAYING:
 		match_time += delta
 		_update_match_time.rpc(match_time)
+
+
+func join_team(team: Team) -> void:
+	_set_team.rpc_id(1, multiplayer.get_unique_id(), team)
 
 
 @rpc("authority", "call_remote", "reliable")
@@ -61,54 +66,33 @@ func score_player(player_id: int) -> void:
 		score_player.rpc(player_id)
 
 
-@rpc("authority", "call_remote", "reliable")
+func _create_new_ball(pos: Vector3):
+	var ball_scene = preload("res://scenes/objects/ball/Ball.tscn")
+	ball = ball_scene.instantiate()
+	ball.global_position = pos
+	get_tree().current_scene.add_child(ball)
+
+
 func respawn_ball() -> void:
+	assert(multiplayer.is_server())
 	if not ball:
+		var ball_pos: Vector3 = Vector3(randf_range(-10, 10), 5, randf_range(-10, 10))
+		_create_new_ball(ball_pos)
 		return
 	
-	if multiplayer.is_server():
-		respawn_ball.rpc()
-
 	var ball_parent = ball.get_parent()
-	ball_parent.remove_child(ball)
+	ball.queue_free()
 	await get_tree().create_timer(3.0).timeout
+	var rand_pos: Vector3 = Vector3(randf_range(-10, 10), 5, randf_range(-10, 10))
+	_create_new_ball(rand_pos)
 	ball_parent.add_child(ball)
-	ball.global_position = Vector3(randf_range(-10, 10), 5, randf_range(-10, 10))
 	ball.linear_velocity = Vector3.ZERO
 	ball.angular_velocity = Vector3.ZERO
 	ball.last_player_id = -1
 	NetworkManager.debug("Ball respawned at %s" % ball.global_position)
 
 
-# TODO: Test with spawning multiple objects from the same scene path.
-@rpc("authority", "call_remote", "reliable")
-func spawn_object(scene_path: String, position: Vector3, rotation: Vector3 = Vector3.ZERO) -> void:
-	var scene = load(scene_path) as PackedScene
-	if not scene:
-		push_error("Failed to load scene: %s" % scene_path)
-		return
 
-	var instance = scene.instantiate() as Node
-	get_tree().current_scene.add_child(instance)
-	instance.global_position = position
-	instance.global_rotation = rotation
-	NetworkManager.debug("Spawned %s at %s" % [instance.name, position])
-
-	if multiplayer.is_server():
-		spawn_object.rpc(scene_path, position, rotation)
-
-
-@rpc("authority", "call_remote", "reliable")
-func destroy_object(node_path: NodePath) -> void:
-	var node = get_tree().current_scene.get_node(node_path)
-	if not node:
-		NetworkManager.debug("Node not found: %s" % node_path)
-		return
-	
-	node.queue_free()
-	NetworkManager.debug("Destroyed object at path: %s" % node_path)
-	if multiplayer.is_server():
-		destroy_object.rpc(node_path)
 
 
 func _on_player_connected(id: int) -> void:
@@ -147,6 +131,21 @@ func stop_match() -> void:
 
 	if multiplayer.is_server():
 		stop_match.rpc()
+
+
+@rpc("any_peer", "call_remote", "reliable")
+func _set_team(player_id: int, team: Team) -> void:
+	var sender := multiplayer.get_remote_sender_id()
+	if sender != player_id && sender != 1:
+		NetworkManager.debug("Ignoring suspicious team change request from %d" % sender)
+		return
+
+	player_teams[player_id] = team
+	NetworkManager.debug("Player %s joined team %s" % [player_id, team])
+
+	if multiplayer.is_server():
+		NetworkManager.debug("Broadcasting team join event.")
+		_set_team.rpc(player_id, team)
 
 
 @rpc("authority", "call_remote", "reliable")

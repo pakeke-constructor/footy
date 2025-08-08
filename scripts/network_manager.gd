@@ -33,6 +33,8 @@ const CLIENT_RTT = 0.03
 signal player_connected(id: int)
 ## A player disconnected from the server.
 signal player_disconnected(id: int)
+## The server has connected to the client.
+signal server_connected()
 ## The server has disconnected.
 signal server_disconnected()
 
@@ -126,22 +128,13 @@ func _on_connected_to_server() -> void:
 	players = []
 	for i in multiplayer.get_peers():
 		players.append(i)
+	players.append(multiplayer.get_unique_id())
+	server_connected.emit()
 
 
 func _on_connection_failed() -> void:
 	debug("Connection to server failed")
 
-
-func _on_peer_connected(id: int) -> void:
-	debug("Peer connected: %d" % id)
-	players.append(id)
-	player_connected.emit(id)
-
-
-func _on_peer_disconnected(id: int) -> void:
-	debug("Peer disconnected: %d" % id)
-	player_disconnected.emit(id)
-	players.erase(id)
 
 
 func _on_server_disconnected() -> void:
@@ -160,26 +153,6 @@ func debug(message: String) -> void:
 			print("(cl): %s" % message) # different makes it more readable
 		Mode.OFFLINE:
 			print("[OFFLINE]: %s" % message)
-
-
-
-func _process(dt: float) -> void:
-	# Increment world-time.
-	time += dt
-
-	match mode:
-		Mode.CLIENT:
-			for i in range(time_buffer.size()):
-				time_buffer[i] += dt
-		Mode.SERVER:
-			if time_since_tick > TICK_STEP:
-				server_tick.emit(tick_number)
-				tick_number += 1
-				# min, since if the server is lagging, we dont want it to get cooked.
-				time_since_tick = 0.0
-				_tick.rpc(tick_number, time)
-			else:
-				time_since_tick += dt;
 
 
 func get_rtt(peer_id: int):
@@ -208,6 +181,170 @@ func _tick(tck_number: int, server_time: float) -> void:
 	time = sum / time_buffer.size()
 
 	tick_number = tck_number
+
+
+
+
+
+
+
+
+
+
+
+#####################################################
+# ---------------------------------------------------
+# Node spawning/despawning.
+#  (server authoritative)
+# ---------------------------------------------------
+#####################################################
+
+var scene_cache = {} # [scene-path] -> PackedScene
+# (so we dont load a new scene every time we spawn new obj)
+
+
+var current_id = 1000
+
+# It must be a Variant, because free'd nodes "dont count" as variants apparently
+var id_to_node: Dictionary[int, Variant] = {}
+var node_to_id: Dictionary[Variant, int] = {}
+
+var node_to_properties: Dictionary[Variant, Array] = {}
+# (We need this for replicating to clients later on, in _on_peer_connected)
+
+
+func _clear_node_id(node) -> void:
+	if node in node_to_id:
+		var id = node_to_id[node]
+		node_to_id.erase(node)
+		id_to_node.erase(id)
+
+
+
+func replicate_spawn(node: Node, properties: Array[String]) -> void:
+	assert(multiplayer.is_server())
+	debug("Replicating spawn: %s" % node.get_path())
+
+	var id = current_id
+	current_id += 1 # simple increment is fine and robust
+
+	id_to_node[id] = node
+	node_to_id[node] = id
+	node_to_properties[node] = properties
+
+	var property_dict: Dictionary[String, Variant] = {}
+	for prop in properties:
+		property_dict[prop] = node.get(prop)
+	_PRIVATE_spawn_node.rpc(node.get_scene_file_path(), id, property_dict)
+
+
+
+func replicate_destroy(node):
+	assert(multiplayer.is_server())
+	if is_instance_valid(node) and (not node.is_queued_for_deletion()):
+		# queue-free it, if its not already queued.
+		node.queue_free()
+
+	if node in node_to_id:
+		var id = node_to_id[node]
+		_PRIVATE_destroy_node.rpc(id)
+		_clear_node_id(node)
+
+
+
+
+@rpc("authority", "call_remote", "reliable")
+func _PRIVATE_spawn_node(scene_path: String, network_id: int, property_dict: Dictionary[String, Variant]) -> void:
+	# WARNING::: DO NOT UNDER ANY CIRCUMSTANCES CALL THIS DIRECTLY.
+	# it will mess shit up.
+	var scene: PackedScene
+	if scene_cache.has(scene_path):
+		scene = scene_cache[scene_path]
+	else:
+		scene = load(scene_path) as PackedScene
+		if not scene:
+			push_error("Failed to load scene: %s" % scene_path)
+			return
+		scene_cache[scene_path] = scene
+
+	var node: Node = scene.instantiate() as Node
+	get_tree().current_scene.add_child(node)
+	debug("Spawned %s, with properties: %s" % [node.get_path(), property_dict])
+
+	node_to_id[node] = network_id
+	id_to_node[network_id] = node
+
+	for property_name in property_dict:
+		if node.has_method("set_" + property_name) or property_name in node:
+			node.set(property_name, property_dict[property_name])
+		else:
+			push_warning("Property '%s' not found on %s" % [property_name, node.name])
+
+
+
+@rpc("authority", "call_remote", "reliable")
+func _PRIVATE_destroy_node(network_id: int) -> void:
+	var node: Node = id_to_node.get(network_id, null)
+	if not node:
+		debug("Node not found: %s" % network_id)
+		return
+	
+	node.queue_free()
+	_clear_node_id(node)
+	debug("Destroyed object at path: %s" % network_id)
+
+
+
+
+func _process(dt: float) -> void:
+	# Increment world-time.
+	time += dt
+
+	match mode:
+		Mode.CLIENT:
+			for i in range(time_buffer.size()):
+				time_buffer[i] += dt
+		Mode.SERVER:
+			if time_since_tick > TICK_STEP:
+				server_tick.emit(tick_number)
+				tick_number += 1
+				# min, since if the server is lagging, we dont want it to get cooked.
+				time_since_tick = 0.0
+				_tick.rpc(tick_number, time)
+			else:
+				time_since_tick += dt;
+
+			# replicate destroy on any nodes that have been free'd:
+			# (this means that we can call `queue_free()` on server-side and just forget about it; AMAZING.)
+			var dead_nodes = []
+			for node in node_to_id:
+				if not is_instance_valid(node):
+					dead_nodes.append(node)
+			for node in dead_nodes:
+				replicate_destroy(node)
+
+
+
+func _on_peer_connected(id: int) -> void:
+	debug("Peer connected: %d" % id)
+	players.append(id)
+	player_connected.emit(id)
+
+	# The clients that just joined wont have received the previous events! Lets replicate stuff.
+	if multiplayer.is_server():
+		for node in node_to_id:
+			if is_instance_valid(node):
+				# replicate all existing nodes
+				replicate_spawn(node, node_to_properties[node])
+
+
+func _on_peer_disconnected(id: int) -> void:
+	debug("Peer disconnected: %d" % id)
+	player_disconnected.emit(id)
+	players.erase(id)
+
+
+
 
 
 func get_time():

@@ -5,6 +5,8 @@ extends RigidBody3D
 class_name SyncedRigidBody3D
 
 
+@export var synced_properties: Array[String] = ["global_position", "global_rotation"]
+
 var bufferer: Bufferer
 
 # server-side delta-compression
@@ -23,6 +25,10 @@ func _ready():
 
 	Util.disable_physics_clientside(self)
 
+
+func _enter_tree():
+	if multiplayer.is_server():
+		NetworkManager.replicate_spawn(self, synced_properties)
 
 
 func _physics_process(_delta):

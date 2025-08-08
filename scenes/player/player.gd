@@ -3,7 +3,7 @@ extends CharacterBody3D
 
 @export var speed := 150.0
 @export var jump_velocity := 4.5
-@export var kick_strength := 5.0
+@export var kick_strength := 15.0
 @export var sprint_multiplier := 1.5
 
 var gravity := ProjectSettings.get_setting("physics/3d/default_gravity") as float
@@ -64,7 +64,7 @@ func _physics_process_server(delta: float) -> void:
 	# if global_position.distance_to(last_position) > EPSILON:
 	var time = NetworkManager.get_time()
 	sync_physics_state.rpc(
-		self.global_position, self.velocity, self.direction,
+		self.global_position, self.direction,
 		time
 	)
 
@@ -115,6 +115,8 @@ func _input(event):
 			_kick.rpc(-camera.global_transform.basis.z * kick_strength)
 
 
+@onready var kick = preload("res://scenes/particles/kick/kick.tscn")
+
 @rpc("authority", "call_remote", "reliable")
 func _kick(kick_dir: Vector3):
 	if not multiplayer.is_server():
@@ -131,12 +133,17 @@ func _kick(kick_dir: Vector3):
 			var ball := balls[0] as Ball
 			ball.last_player_id = player_id
 			ball.apply_impulse(kick_dir.normalized() * kick_strength, Vector3.ZERO)
-			GameManager.spawn_object("res://scenes/particles/kick/kick.tscn", ball.global_position, Vector3.ZERO)
+
+			var kick_scene = preload("res://scenes/particles/kick/kick.tscn")
+			var kick_instance: GPUParticles3D = kick_scene.instantiate()
+			kick_instance.global_transform.origin = ball.global_position
+			get_tree().current_scene.add_child(kick_instance)
+
 
 
 # server -> client
 @rpc("any_peer", "call_remote", "unreliable_ordered", Util.UNRELIABLE_ORDERED)
-func sync_physics_state(pos: Vector3, lin_vel: Vector3, move_dir: Vector2, send_time: float):
+func sync_physics_state(pos: Vector3, move_dir: Vector2, send_time: float):
 	bufferer.lerp_from_server(send_time, "global_position", pos)
 	#bufferer.lerp_from_server(send_time, "velocity", lin_vel)
 	bufferer.do_from_server(send_time, func():
