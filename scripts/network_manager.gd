@@ -205,14 +205,15 @@ var scene_cache = {} # [scene-path] -> PackedScene
 
 var current_id = 1000
 
-var id_to_node: Dictionary[int, Node] = {}
-var node_to_id: Dictionary[Node, int] = {}
+# It must be a Variant, because free'd nodes "dont count" as variants apparently
+var id_to_node: Dictionary[int, Variant] = {}
+var node_to_id: Dictionary[Variant, int] = {}
 
-var node_to_properties: Dictionary[Node, Array] = {}
+var node_to_properties: Dictionary[Variant, Array] = {}
 # (We need this for replicating to clients later on, in _on_peer_connected)
 
 
-func _clear_node_id(node:Node) -> void:
+func _clear_node_id(node) -> void:
 	if node in node_to_id:
 		var id = node_to_id[node]
 		node_to_id.erase(node)
@@ -238,7 +239,7 @@ func replicate_spawn(node: Node, properties: Array[String]) -> void:
 
 
 
-func replicate_destroy(node: Node):
+func replicate_destroy(node):
 	assert(multiplayer.is_server())
 	if is_instance_valid(node) and (not node.is_queued_for_deletion()):
 		# queue-free it, if its not already queued.
@@ -315,7 +316,7 @@ func _process(dt: float) -> void:
 
 			# replicate destroy on any nodes that have been free'd:
 			# (this means that we can call `queue_free()` on server-side and just forget about it; AMAZING.)
-			var dead_nodes: Array[Node] = []
+			var dead_nodes = []
 			for node in node_to_id:
 				if not is_instance_valid(node):
 					dead_nodes.append(node)
