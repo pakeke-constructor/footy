@@ -1,0 +1,26 @@
+[gd_scene load_steps=2 format=3 uid="uid://1hjbbm3145ei"]
+
+[ext_resource type="Script" uid="uid://6vnqb5mqbhf5" path="res://scenes/player_list/player_list.gd" id="1_sthqh"]
+
+[node name="PlayerList" type="PanelContainer"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -35.5
+offset_top = -24.5
+offset_right = 35.5
+offset_bottom = 24.5
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_sthqh")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+layout_mode = 2
+bbcode_enabled = true
+text = "Placeholder"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1

@@ -6,11 +6,16 @@ extends Control
 @onready var time_label: Label = %TimeLabel
 @onready var goal_label_container: Control = %GoalLabelContainer
 @onready var timer: Timer = $Timer
+@onready var player_list: Control = %PlayerList
 
 
 func _ready() -> void:
 	GameManager.team_scored.connect(_on_team_scored)
 	timer.timeout.connect(_on_timer_timeout)
+
+
+func _process(_delta: float) -> void:
+	player_list.visible = Input.is_key_pressed(KEY_TAB)
 
 
 func _on_team_scored(_team: GameManager.Team) -> void:
