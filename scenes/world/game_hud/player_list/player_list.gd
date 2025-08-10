@@ -19,14 +19,30 @@ func _ready() -> void:
 	NetworkManager.player_disconnected.connect(func(_id: int) -> void:
 		_update_player_list()
 	)
+	
+	GameManager.team_assignment_changed.connect(func(_player_id: int, _team: int) -> void:
+		_update_player_list()
+	)
 
 	_update_player_list()
 
 
 func _update_player_list() -> void:
 	var text = ""
-	text += "[center][b][color=#4080FF]BLUE TEAM[/color][/b][/center]\n"
 	
+	# Display referee first if there is one
+	var referee_players = _get_team_players(GameManager.Team.REFEREE)
+	if not referee_players.is_empty():
+		text += "[center][b][color=#FFFF00]REFEREE[/color][/b][/center]\n"
+		for player_id in referee_players:
+			if player_id == 1:
+				continue
+			# TODO: Add player username when available
+			text += "[color=#FFFF00]Player #" + str(player_id) + "[/color]\n"
+		text += "\n"
+	
+	# Display blue team
+	text += "[center][b][color=#4080FF]BLUE TEAM[/color][/b][/center]\n"
 	var blue_players = _get_team_players(GameManager.Team.BLUE)
 	if blue_players.is_empty():
 		text += "[center][i]No players[/i][/center]\n"
@@ -40,8 +56,9 @@ func _update_player_list() -> void:
 			text += "[color=#4080FF]Player #" + str(player_id) + "[/color]: " + str(score) + " points\n"
 	
 	text += "\n"
-	text += "[center][b][color=#FF4040]RED TEAM[/color][/b][/center]\n"
 	
+	# Display red team
+	text += "[center][b][color=#FF4040]RED TEAM[/color][/b][/center]\n"
 	var red_players = _get_team_players(GameManager.Team.RED)
 	if red_players.is_empty():
 		text += "[center][i]No players[/i][/center]\n"
