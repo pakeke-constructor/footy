@@ -79,7 +79,7 @@ func _physics_process_client(delta: float) -> void:
 
 	var time = NetworkManager.get_time()
 	if Input.is_action_just_pressed("ui_accept"):
-		sync_jump.rpc(time)
+		sync_jump.rpc_id(1, time)
 
 	var input_dir := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
 	var move_dir := input_dir.rotated(-camera.global_rotation.y)
@@ -89,8 +89,8 @@ func _physics_process_client(delta: float) -> void:
 		camera.fov = lerp(camera.fov, 90.0, delta * 5)
 	else:
 		camera.fov = lerp(camera.fov, 75.0, delta * 5)
-	sync_move_direction.rpc(move_dir, time)
-	sync_rotation.rpc(rotation, time)
+	sync_move_direction.rpc_id(1, move_dir, time)
+	sync_rotation.rpc_id(1, rotation, time)
 	
 
 
