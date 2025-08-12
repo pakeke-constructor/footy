@@ -1,7 +1,7 @@
 [gd_scene load_steps=9 format=3 uid="uid://cg853y3yh4rlx"]
 
 [ext_resource type="Script" uid="uid://upywlm524htm" path="res://scenes/world/game_hud/game_hud.gd" id="1_7s1mr"]
-[ext_resource type="Texture2D" uid="uid://bmahfeglerxg5" path="res://textures/vignette.png" id="2_nfw3n"]
+[ext_resource type="Texture2D" uid="uid://bmahfeglerxg5" path="res://scenes/world/game_hud/vignette.png" id="2_nfw3n"]
 [ext_resource type="Script" uid="uid://bx7salvcww6fm" path="res://scripts/ball_indicator_renderer.gd" id="3_aiwwf"]
 [ext_resource type="Texture2D" uid="uid://sjij5f3r8yqe" path="res://addons/kenney_game-icons/PNG/Black/1x/arrowUp.png" id="4_kum1k"]
 [ext_resource type="PackedScene" uid="uid://1hjbbm3145ei" path="res://scenes/player_list/player_list.tscn" id="5_aiwwf"]
