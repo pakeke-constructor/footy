@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://1hjbbm3145ei"]
 
-[ext_resource type="Script" uid="uid://6vnqb5mqbhf5" path="res://scenes/player_list/player_list.gd" id="1_sthqh"]
+[ext_resource type="Script" uid="uid://6vnqb5mqbhf5" path="res://scenes/world/game_hud/player_list/player_list.gd" id="1_sthqh"]
 
 [node name="PlayerList" type="PanelContainer"]
 anchors_preset = 8
