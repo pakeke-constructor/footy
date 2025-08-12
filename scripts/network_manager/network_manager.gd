@@ -239,6 +239,12 @@ func replicate_spawn(node: Node, properties: Array[String]) -> void:
 
 
 
+# WARNING WARNING WARNING!!!
+# WARNING WARNING WARNING!!!
+# WARNING WARNING WARNING!!!
+# DO **NOT** GIVE TYPE ANNOTATIONS TO THIS FUNCTION.
+# It will cause the code to fail; since if we do `node: Node`, then the type check
+# will fail when `is_instance_valid()` returns false.
 func replicate_destroy(node):
 	assert(multiplayer.is_server())
 	if is_instance_valid(node) and (not node.is_queued_for_deletion()):
@@ -291,7 +297,7 @@ func _PRIVATE_destroy_node(network_id: int) -> void:
 	
 	node.queue_free()
 	_clear_node_id(node)
-	debug("Destroyed object at path: %s" % network_id)
+	debug("Destroyed object with id: %s" % network_id)
 
 
 
