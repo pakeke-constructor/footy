@@ -69,8 +69,8 @@ func score_player(player_id: int) -> void:
 func _create_new_ball(pos: Vector3):
 	var ball_scene = preload("res://scenes/objects/ball/Ball.tscn")
 	ball = ball_scene.instantiate()
-	ball.global_position = pos
 	get_tree().current_scene.add_child(ball)
+	ball.global_position = pos
 
 
 func respawn_ball() -> void:
