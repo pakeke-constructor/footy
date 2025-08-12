@@ -9,7 +9,8 @@ graph TD
         HostMenuu[Join / Host game screen]
     end
 
-    MainMenu --> World
+    MainMenu --> WorldManager
+    WorldManager -- creates/destroys --> World
 
     LobbyMenu -- uses --> SoundManager
 
@@ -40,14 +41,15 @@ graph TD
     subgraph ParticleManager
         Particles[Kick, Explosion, Etc]
     end
+
+    subgraph SoundManager
+        SoundEffects[Sfx1, sfx2, etc]
+    end
+
     
     subgraph ObjectManager
         G[Landmine, Ball, Box, etc]
         H[SyncedRigidBody3D]
-    end
-
-    subgraph SoundManager
-        SoundEffects[Sfx1, sfx2, etc]
     end
 ```
 
