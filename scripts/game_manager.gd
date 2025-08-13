@@ -138,8 +138,7 @@ func _balance_teams() -> void:
 	if needs_referee:
 		var referee_id = all_players.back()
 		if player_teams[referee_id] != Team.REFEREE:
-			player_teams[referee_id] = Team.REFEREE
-			team_assignment_changed.emit(referee_id, Team.REFEREE)
+			change_team(referee_id, Team.REFEREE)
 		all_players.pop_back()  # Remove referee from the list for team assignment
 	else:
 		# If we don't need a referee but have one, reassign them
@@ -155,8 +154,13 @@ func _balance_teams() -> void:
 		
 		# Only update and emit signal if team is changing
 		if player_teams[player_id] != team:
-			player_teams[player_id] = team
-			team_assignment_changed.emit(player_id, team)
+			change_team(player_id, team)
+
+
+
+func change_team(player_id: int, new_team: Team) -> void:
+	player_teams[player_id] = new_team
+	team_assignment_changed.emit(player_id, new_team)
 
 
 @rpc("authority", "call_remote", "reliable")
@@ -225,9 +229,7 @@ func _update_match_time(new_time: float) -> void:
 
 @rpc("authority", "call_remote", "reliable")
 func _update_player_teams(new_player_teams: Dictionary) -> void:
-	player_teams = new_player_teams
-
 	for player_id in new_player_teams:
-		team_assignment_changed.emit(player_id, new_player_teams[player_id])
-	
+		change_team(player_id, new_player_teams[player_id])
+
 	NetworkManager.debug("Player teams updated: %s" % player_teams)
