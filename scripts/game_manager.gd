@@ -113,8 +113,6 @@ func _on_player_disconnected(id: int) -> void:
 		player_scores.erase(id)
 		player_teams.erase(id)
 		_update_player_scores.rpc(player_scores)
-
-		_balance_teams()
 		_update_player_teams.rpc(player_teams)
 
 
