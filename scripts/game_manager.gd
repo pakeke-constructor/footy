@@ -127,51 +127,29 @@ func _get_team_counts() -> Dictionary[Team, int]:
 	return counts
 
 
-# Not used for now, but we may need it to reshuffle teams when starting a new match
 func reshuffle_teams() -> void:
 	if not multiplayer.is_server():
 		return
 	
-	var all_players = player_teams.keys()
+	var all_players := NetworkManager.players
 	all_players.shuffle()
 	
 	var total_players = all_players.size()
 	var needs_referee = total_players % 2 != 0
-	
-	# Calculate how many players should be on each team
-	var blue_count = total_players / 2
-	var red_count = total_players / 2
-	
-	if needs_referee:
-		blue_count = (total_players - 1) / 2
-		red_count = (total_players - 1) / 2
-		
-		# Assign referee (last player in shuffled list)
-		var referee_id = all_players.back()
-		change_team(referee_id, Team.REFEREE)
-		all_players.pop_back()  # Remove referee from the list for team assignment
-	else:
-		# If we don't need a referee but have one, reassign them
-		var counts = _get_team_counts()
-		if counts[Team.REFEREE] > 0:
-			for player_id in all_players.duplicate():
-				if player_teams[player_id] == Team.REFEREE:
-					# Keep them in the list for reassignment
-					player_teams[player_id] = Team.BLUE  # Temporary assignment
-	
-	# Now assign remaining players to teams
-	for i in range(all_players.size()):
-		var player_id = all_players[i]
-		var team = Team.BLUE if i < blue_count else Team.RED
-		
-		# Only update and emit signal if team is changing
-		if player_teams[player_id] != team:
-			change_team(player_id, team)
-	
-	# Broadcast the updated team assignments to all clients
-	_update_player_teams.rpc(player_teams)
-	NetworkManager.debug("Teams reshuffled randomly")
+	var team_size = total_players / 2
 
+	if needs_referee:
+		var ref_id = all_players.pop_back()
+		change_team(ref_id, Team.REFEREE)
+	
+	for i in all_players.size():
+		var id := all_players[i]
+		var team := Team.BLUE if i < team_size else Team.RED
+		if player_teams[id] != team:
+			change_team(id, team)
+	
+	_update_player_teams.rpc(player_teams)
+	NetworkManager.debug("Teams reshuffled")
 
 
 func change_team(player_id: int, new_team: Team) -> void:
