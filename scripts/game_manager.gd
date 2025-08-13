@@ -98,8 +98,7 @@ func respawn_ball() -> void:
 func _on_player_connected(id: int) -> void:
 	if multiplayer.is_server():
 		player_scores[id] = 0
-		player_teams[id] = Team.BLUE
-		_balance_teams()
+		assign_player_to_team(id)
 		
 		_update_team_scores.rpc_id(id, team_scores)
 		_update_player_scores.rpc(player_scores)
@@ -116,12 +115,57 @@ func _on_player_disconnected(id: int) -> void:
 		_update_player_teams.rpc(player_teams)
 
 
-func _balance_teams() -> void:
+# Returns a dictionary with the count of players on each team
+func _get_team_counts() -> Dictionary[Team, int]:
+	var counts: Dictionary[Team, int] = {
+		Team.BLUE: 0,
+		Team.RED: 0,
+		Team.REFEREE: 0
+	}
+	
+	for team in player_teams.values():
+		counts[team] += 1
+	
+	return counts
+
+
+func assign_player_to_team(player_id: int) -> void:
+	if not multiplayer.is_server():
+		return
+	
+	# Get current team counts
+	var counts = _get_team_counts()
+	
+	var total_players = counts[Team.BLUE] + counts[Team.RED] + counts[Team.REFEREE] + 1  # +1 for the new player
+	var needs_referee = total_players % 2 != 0
+	
+	# If we need a referee and don't have one, make this player the referee
+	if needs_referee and counts[Team.REFEREE] == 0:
+		change_team(player_id, Team.REFEREE)
+		return
+	
+	# Otherwise, assign to the team with fewer players
+	# If equal, randomly choose a team
+	var team_to_join
+	if counts[Team.BLUE] < counts[Team.RED]:
+		team_to_join = Team.BLUE
+	elif counts[Team.RED] < counts[Team.BLUE]:
+		team_to_join = Team.RED
+	else:
+		# Teams are balanced, randomly choose
+		team_to_join = Team.BLUE if randf() < 0.5 else Team.RED
+	
+	change_team(player_id, team_to_join)
+	NetworkManager.debug("Player %s assigned to team %s" % [player_id, team_to_join])
+
+
+# Not used for now, but we may need it to reshuffle teams when starting a new match
+func reshuffle_teams() -> void:
 	if not multiplayer.is_server():
 		return
 	
 	var all_players = player_teams.keys()
-	all_players.sort()
+	all_players.shuffle()
 	
 	var total_players = all_players.size()
 	var needs_referee = total_players % 2 != 0
@@ -133,19 +177,19 @@ func _balance_teams() -> void:
 	if needs_referee:
 		blue_count = (total_players - 1) / 2
 		red_count = (total_players - 1) / 2
-	
-	# First, assign referee if needed (last player in sorted list)
-	if needs_referee:
+		
+		# Assign referee (last player in shuffled list)
 		var referee_id = all_players.back()
-		if player_teams[referee_id] != Team.REFEREE:
-			change_team(referee_id, Team.REFEREE)
+		change_team(referee_id, Team.REFEREE)
 		all_players.pop_back()  # Remove referee from the list for team assignment
 	else:
 		# If we don't need a referee but have one, reassign them
-		for player_id in all_players.duplicate():
-			if player_teams[player_id] == Team.REFEREE:
-				# We'll handle this player in the normal assignment below
-				player_teams[player_id] = Team.BLUE  # Temporary assignment
+		var counts = _get_team_counts()
+		if counts[Team.REFEREE] > 0:
+			for player_id in all_players.duplicate():
+				if player_teams[player_id] == Team.REFEREE:
+					# Keep them in the list for reassignment
+					player_teams[player_id] = Team.BLUE  # Temporary assignment
 	
 	# Now assign remaining players to teams
 	for i in range(all_players.size()):
@@ -155,6 +199,10 @@ func _balance_teams() -> void:
 		# Only update and emit signal if team is changing
 		if player_teams[player_id] != team:
 			change_team(player_id, team)
+	
+	# Broadcast the updated team assignments to all clients
+	_update_player_teams.rpc(player_teams)
+	NetworkManager.debug("Teams reshuffled randomly")
 
 
 
