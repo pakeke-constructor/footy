@@ -98,8 +98,6 @@ func respawn_ball() -> void:
 func _on_player_connected(id: int) -> void:
 	if multiplayer.is_server():
 		player_scores[id] = 0
-		assign_player_to_team(id)
-		
 		_update_team_scores.rpc_id(id, team_scores)
 		_update_player_scores.rpc(player_scores)
 		_update_player_teams.rpc(player_teams)
@@ -127,36 +125,6 @@ func _get_team_counts() -> Dictionary[Team, int]:
 		counts[team] += 1
 	
 	return counts
-
-
-func assign_player_to_team(player_id: int) -> void:
-	if not multiplayer.is_server():
-		return
-	
-	# Get current team counts
-	var counts = _get_team_counts()
-	
-	var total_players = counts[Team.BLUE] + counts[Team.RED] + counts[Team.REFEREE] + 1  # +1 for the new player
-	var needs_referee = total_players % 2 != 0
-	
-	# If we need a referee and don't have one, make this player the referee
-	if needs_referee and counts[Team.REFEREE] == 0:
-		change_team(player_id, Team.REFEREE)
-		return
-	
-	# Otherwise, assign to the team with fewer players
-	# If equal, randomly choose a team
-	var team_to_join
-	if counts[Team.BLUE] < counts[Team.RED]:
-		team_to_join = Team.BLUE
-	elif counts[Team.RED] < counts[Team.BLUE]:
-		team_to_join = Team.RED
-	else:
-		# Teams are balanced, randomly choose
-		team_to_join = Team.BLUE if randf() < 0.5 else Team.RED
-	
-	change_team(player_id, team_to_join)
-	NetworkManager.debug("Player %s assigned to team %s" % [player_id, team_to_join])
 
 
 # Not used for now, but we may need it to reshuffle teams when starting a new match
