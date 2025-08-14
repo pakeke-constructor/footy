@@ -113,20 +113,6 @@ func _on_player_disconnected(id: int) -> void:
 		_update_player_teams.rpc(player_teams)
 
 
-# Returns a dictionary with the count of players on each team
-func _get_team_counts() -> Dictionary[Team, int]:
-	var counts: Dictionary[Team, int] = {
-		Team.BLUE: 0,
-		Team.RED: 0,
-		Team.REFEREE: 0
-	}
-	
-	for team in player_teams.values():
-		counts[team] += 1
-	
-	return counts
-
-
 func reshuffle_teams() -> void:
 	if not multiplayer.is_server():
 		return
