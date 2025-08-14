@@ -131,7 +131,6 @@ func _kick(kick_dir: Vector3):
 				func(a, b): return a.global_position.distance_to(self.global_position) < b.global_position.distance_to(self.global_position)
 			)
 			var ball := balls[0] as Ball
-			ball.last_player_id = player_id
 			ball.apply_impulse(kick_dir.normalized() * kick_strength, Vector3.ZERO)
 
 			var kick_scene = preload("res://scenes/particles/kick/kick.tscn")

@@ -46,23 +46,15 @@ func _physics_process(delta: float) -> void:
 @rpc("authority", "call_remote", "reliable")
 func score_team(team: Team) -> void:
 	team_scores[team] += 1
+	for id in player_teams:
+		if player_teams[id] == team:
+			player_scores[id] += 1
+			player_scored.emit(id)
 	NetworkManager.debug("Team %s scored!" % team)
 	team_scored.emit(team)
 	if multiplayer.is_server():
 		NetworkManager.debug("Broadcasting score event.")
 		score_team.rpc(team)
-
-
-@rpc("authority", "call_remote", "reliable")
-func score_player(player_id: int) -> void:
-	if player_id == -1:
-		return
-	player_scores[player_id] += 1
-	NetworkManager.debug("Player %s scored!" % player_id)
-	player_scored.emit(player_id)
-	if multiplayer.is_server():
-		NetworkManager.debug("Broadcasting score event.")
-		score_player.rpc(player_id)
 
 
 func _create_new_ball(pos: Vector3):
