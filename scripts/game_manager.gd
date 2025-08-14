@@ -43,10 +43,6 @@ func _physics_process(delta: float) -> void:
 		_update_match_time.rpc(match_time)
 
 
-func join_team(team: Team) -> void:
-	_set_team.rpc_id(1, multiplayer.get_unique_id(), team)
-
-
 @rpc("authority", "call_remote", "reliable")
 func score_team(team: Team) -> void:
 	team_scores[team] += 1
@@ -165,23 +161,6 @@ func stop_match() -> void:
 
 	if multiplayer.is_server():
 		stop_match.rpc()
-
-
-@rpc("any_peer", "call_remote", "reliable")
-func _set_team(player_id: int, team: Team) -> void:
-	var sender := multiplayer.get_remote_sender_id()
-	if sender != player_id && sender != 1:
-		NetworkManager.debug("Ignoring suspicious team change request from %d" % sender)
-		return
-
-	player_teams[player_id] = team
-	NetworkManager.debug("Player %s joined team %s" % [player_id, team])
-	
-	# Emit signal that team assignments changed
-	team_assignment_changed.emit(player_id, team)
-
-	if multiplayer.is_server():
-		_update_player_teams.rpc(player_teams)
 
 
 @rpc("authority", "call_remote", "reliable")
