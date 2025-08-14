@@ -16,7 +16,6 @@ func _on_body_entered(body: Node3D) -> void:
 		if body is Ball:
 			# TODO: Implement referee behavior (rules to be fleshed out)
 			GameManager.score_team(team)
-			GameManager.score_player(body.last_player_id)
 			GameManager.respawn_ball()
 
 
