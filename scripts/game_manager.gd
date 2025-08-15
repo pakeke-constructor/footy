@@ -28,7 +28,6 @@ var player_scores: Dictionary[int, int] = {}
 var player_teams: Dictionary[int, Team] = {}
 
 var state: GameState = GameState.STOPPED
-var ball: Ball
 var match_time: float = 0.0
 
 
@@ -57,30 +56,8 @@ func score_team(team: Team) -> void:
 		score_team.rpc(team)
 
 
-func _create_new_ball(pos: Vector3):
-	var ball_scene = preload("res://scenes/objects/ball/Ball.tscn")
-	ball = ball_scene.instantiate()
-	get_tree().current_scene.add_child(ball)
-	ball.global_position = pos
-
-
-func respawn_ball() -> void:
-	assert(multiplayer.is_server())
-	if not ball:
-		var ball_pos: Vector3 = Vector3(randf_range(-10, 10), 5, randf_range(-10, 10))
-		_create_new_ball(ball_pos)
-		return
-	
-	var ball_parent = ball.get_parent()
-	ball.queue_free()
-	await get_tree().create_timer(3.0).timeout
-	var rand_pos: Vector3 = Vector3(randf_range(-10, 10), 5, randf_range(-10, 10))
-	_create_new_ball(rand_pos)
-	ball_parent.add_child(ball)
-	ball.linear_velocity = Vector3.ZERO
-	ball.angular_velocity = Vector3.ZERO
-	ball.last_player_id = -1
-	NetworkManager.debug("Ball respawned at %s" % ball.global_position)
+func get_world() -> World:
+	return get_tree().current_scene as World
 
 
 func _on_player_connected(id: int) -> void:
