@@ -1,3 +1,4 @@
+class_name World
 extends Node3D
 
 
@@ -10,6 +11,7 @@ extends Node3D
 @onready var join_button: Button = %JoinButton
 
 var ingame_players: Array[int] = []
+var ball: Ball
 
 
 func _ready() -> void:
@@ -22,8 +24,8 @@ func _ready() -> void:
 			if id != multiplayer.get_unique_id():
 				_spawn_player(id)
 		
-		GameManager.respawn_ball()
-		GameManager.ball = get_node_or_null("Ball")
+		respawn_ball()
+		ball = get_node_or_null("Ball")
 
 
 func _on_join_pressed() -> void:
@@ -74,3 +76,26 @@ func _despawn_player(id: int) -> void:
 		player.queue_free()
 		ingame_players.erase(id)
 		NetworkManager.debug("Despawning player %s" % player.name)
+
+
+func _create_new_ball(pos: Vector3):
+	ball = ball_scene.instantiate()
+	get_tree().current_scene.add_child(ball)
+	ball.global_position = pos
+
+
+func respawn_ball() -> void:
+	assert(multiplayer.is_server())
+	if not ball:
+		var ball_pos: Vector3 = Vector3(randf_range(-10, 10), 5, randf_range(-10, 10))
+		_create_new_ball(ball_pos)
+		return
+	
+	ball.queue_free()
+	await get_tree().create_timer(3.0).timeout
+	var rand_pos: Vector3 = Vector3(randf_range(-10, 10), 5, randf_range(-10, 10))
+	_create_new_ball(rand_pos)
+	add_child(ball)
+	ball.linear_velocity = Vector3.ZERO
+	ball.angular_velocity = Vector3.ZERO
+	NetworkManager.debug("Ball respawned at %s" % ball.global_position)
