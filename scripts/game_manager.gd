@@ -14,8 +14,8 @@ enum Team {
 }
 
 enum GameState {
-	STOPPED,  # Match is not in progress
-	PLAYING,  # Match is in progress
+	WAITING,	## Waiting for players
+	PLAYING,	## Match is in progress
 }
 
 var team_scores: Dictionary[Team, int] = {
@@ -27,7 +27,7 @@ var team_scores: Dictionary[Team, int] = {
 var player_scores: Dictionary[int, int] = {}
 var player_teams: Dictionary[int, Team] = {}
 
-var state: GameState = GameState.STOPPED
+var state: GameState = GameState.WAITING
 var match_time: float = 0.0
 
 
@@ -125,7 +125,7 @@ func start_match() -> void:
 
 @rpc("authority", "call_remote", "reliable")
 func stop_match() -> void:
-	state = GameState.STOPPED
+	state = GameState.WAITING
 	match_stopped.emit()
 
 	if multiplayer.is_server():
