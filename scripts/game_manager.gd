@@ -44,6 +44,9 @@ func _physics_process(delta: float) -> void:
 
 @rpc("authority", "call_remote", "reliable")
 func score_team(team: Team) -> void:
+	if state != GameState.PLAYING:
+		return
+
 	team_scores[team] += 1
 	for id in player_teams:
 		if player_teams[id] == team:
