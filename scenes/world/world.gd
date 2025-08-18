@@ -80,7 +80,7 @@ func _despawn_player(id: int) -> void:
 
 func _create_new_ball(pos: Vector3):
 	ball = ball_scene.instantiate()
-	get_tree().current_scene.add_child(ball)
+	add_child(ball)
 	ball.global_position = pos
 
 
@@ -95,7 +95,6 @@ func respawn_ball() -> void:
 	await get_tree().create_timer(3.0).timeout
 	var rand_pos: Vector3 = Vector3(randf_range(-10, 10), 5, randf_range(-10, 10))
 	_create_new_ball(rand_pos)
-	add_child(ball)
 	ball.linear_velocity = Vector3.ZERO
 	ball.angular_velocity = Vector3.ZERO
 	NetworkManager.debug("Ball respawned at %s" % ball.global_position)
