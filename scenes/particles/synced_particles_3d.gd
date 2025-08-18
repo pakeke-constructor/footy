@@ -10,4 +10,5 @@ func _ready() -> void:
 
 
 func _on_finished() -> void:
-	queue_free()
+	if multiplayer.is_server():
+		NetworkManager.replicate_destroy(self)
