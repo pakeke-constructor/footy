@@ -135,7 +135,7 @@ func _kick(kick_dir: Vector3):
 
 			var kick_scene = preload("res://scenes/particles/kick/kick.tscn")
 			var kick_instance: GPUParticles3D = kick_scene.instantiate()
-			kick_instance.global_transform.origin = ball.global_position
+			kick_instance.transform.origin = ball.global_position
 			get_tree().current_scene.add_child(kick_instance)
 
 
