@@ -1,6 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://dv8i53tcmku4j"]
-
-[ext_resource type="Script" uid="uid://crl87q66unadm" path="res://scenes/particles/oneshot_particles.gd" id="1_2fk53"]
+[gd_scene load_steps=6 format=3 uid="uid://dv8i53tcmku4j"]
 
 [sub_resource type="Gradient" id="Gradient_bhgup"]
 colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
@@ -33,4 +31,3 @@ one_shot = true
 explosiveness = 1.0
 process_material = SubResource("ParticleProcessMaterial_wmd1t")
 draw_pass_1 = SubResource("BoxMesh_bhgup")
-script = ExtResource("1_2fk53")
