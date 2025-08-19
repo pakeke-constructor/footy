@@ -35,7 +35,7 @@ func _on_body_entered(body: Node) -> void:
 			var force = direction * explosion_force * (1.0 - (distance / explosion_radius))
 			body.apply_impulse(force, global_position - body.global_position)
 
-			# TODO: do particles here, once we have ParticlesService
+			ParticlesManager.explosion(global_position)
 
 			queue_free()
 
