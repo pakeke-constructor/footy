@@ -7,6 +7,7 @@
 
 [node name="Ball" type="RigidBody3D"]
 mass = 0.5
+continuous_cd = true
 script = ExtResource("1_ijbg5")
 metadata/_custom_type_script = "uid://vrjlse41qsux"
 
