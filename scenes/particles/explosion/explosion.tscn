@@ -1,4 +1,6 @@
-[gd_scene load_steps=6 format=3 uid="uid://dao40bl3kdgtw"]
+[gd_scene load_steps=7 format=3 uid="uid://dao40bl3kdgtw"]
+
+[ext_resource type="Script" uid="uid://crl87q66unadm" path="res://scenes/particles/oneshot_particles.gd" id="1_pybja"]
 
 [sub_resource type="Curve" id="Curve_pybja"]
 _data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
@@ -34,3 +36,4 @@ one_shot = true
 explosiveness = 1.0
 process_material = SubResource("ParticleProcessMaterial_s508d")
 draw_pass_1 = SubResource("BoxMesh_q8ljq")
+script = ExtResource("1_pybja")

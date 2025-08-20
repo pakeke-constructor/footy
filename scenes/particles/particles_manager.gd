@@ -11,13 +11,6 @@ func explosion(position: Vector3) -> void:
 	_spawn_particles(scene.instantiate(), position)
 
 
-func _spawn_particles(instance: GPUParticles3D, position: Vector3) -> void:
+func _spawn_particles(instance: Node3D, position: Vector3) -> void:
 	instance.transform.origin = position
-	instance.emitting = true
-	instance.finished.connect(_destroy_particles.bind(instance))
 	add_child(instance)
-	NetworkManager.replicate_spawn(instance, ["transform", "emitting"])
-
-
-func _destroy_particles(instance: GPUParticles3D) -> void:
-	NetworkManager.replicate_destroy(instance)
