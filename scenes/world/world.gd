@@ -19,6 +19,14 @@ func _ready() -> void:
 	NetworkManager.player_connected.connect(_on_player_connected)
 	NetworkManager.player_disconnected.connect(_despawn_player)
 
+	join_button.disabled = GameManager.state != GameManager.GameState.WAITING
+	GameManager.match_started.connect(func() -> void:
+		join_button.disabled = false
+	)
+	GameManager.match_stopped.connect(func() -> void:
+		join_button.disabled = true
+	)
+
 	if multiplayer.is_server():
 		for id in NetworkManager.players:
 			if id != multiplayer.get_unique_id():
