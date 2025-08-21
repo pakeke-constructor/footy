@@ -115,8 +115,6 @@ func _input(event):
 			_kick.rpc(-camera.global_transform.basis.z * kick_strength)
 
 
-@onready var kick = preload("res://scenes/particles/kick/kick.tscn")
-
 @rpc("authority", "call_remote", "reliable")
 func _kick(kick_dir: Vector3):
 	if not multiplayer.is_server():
@@ -132,11 +130,7 @@ func _kick(kick_dir: Vector3):
 			)
 			var ball := balls[0] as Ball
 			ball.apply_impulse(kick_dir.normalized() * kick_strength, Vector3.ZERO)
-
-			var kick_scene = preload("res://scenes/particles/kick/kick.tscn")
-			var kick_instance: GPUParticles3D = kick_scene.instantiate()
-			kick_instance.transform.origin = ball.global_position
-			get_tree().current_scene.add_child(kick_instance)
+			ParticlesManager.kick(ball.global_position)
 
 
 

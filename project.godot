@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 NetworkManager="*res://scripts/network_manager/network_manager.gd"
 GameManager="*res://scripts/game_manager.gd"
+ParticlesManager="*res://scenes/particles/particles_manager.gd"
 
 [debug]
 
