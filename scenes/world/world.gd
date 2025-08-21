@@ -75,6 +75,8 @@ func _spawn_player(id: int) -> void:
 
 	if multiplayer.is_server():
 		_spawn_player.rpc(id)
+		if ingame_players.size() >= 2:
+			GameManager.start_match()
 
 
 @rpc("authority", "call_remote", "reliable")

@@ -99,7 +99,7 @@ func reshuffle_teams() -> void:
 	for i in all_players.size():
 		var id := all_players[i]
 		var team := Team.BLUE if i < team_size else Team.RED
-		if player_teams[id] != team:
+		if !player_teams.has(id) or player_teams[id] != team:
 			change_team(id, team)
 	
 	_update_player_teams.rpc(player_teams)
@@ -119,11 +119,13 @@ func start_match() -> void:
 		Team.REFEREE: 0
 	}
 	state = GameState.PLAYING
+	reshuffle_teams()
 	match_time = 0.0
 	match_started.emit()
 
 	if multiplayer.is_server():
 		start_match.rpc()
+		NetworkManager.debug("Match started, broadcasting to all clients.")
 
 
 @rpc("authority", "call_remote", "reliable")
