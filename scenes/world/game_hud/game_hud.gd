@@ -4,7 +4,8 @@ extends Control
 @onready var score_label_blue: Label = %ScoreLabelBlue
 @onready var score_label_red: Label = %ScoreLabelRed
 @onready var time_label: Label = %TimeLabel
-@onready var goal_label_container: Control = %GoalLabelContainer
+@onready var big_text_container: Control = %BigTextContainer
+@onready var big_text_label: Label = %BigTextLabel
 @onready var timer: Timer = $Timer
 @onready var player_list: Control = %PlayerList
 @onready var score_view_container: Control = %ScoreViewContainer
@@ -27,17 +28,26 @@ func _on_team_scored(_team: GameManager.Team) -> void:
 	score_label_blue.text = str(GameManager.team_scores[GameManager.Team.BLUE])
 	score_label_red.text = str(GameManager.team_scores[GameManager.Team.RED])
 
-	goal_label_container.visible = true
+	big_text_container.visible = true
+	big_text_label.text = "Goal!!!"
 	await get_tree().create_timer(3.0).timeout
-	goal_label_container.visible = false
+	big_text_container.visible = false
 
 
 func _on_match_started() -> void:
 	score_view_container.visible = true
+	big_text_container.visible = true
+	big_text_label.text = "Start!"
+	await get_tree().create_timer(3.0).timeout
+	big_text_container.visible = false
 
 
 func _on_match_stopped() -> void:
 	score_view_container.visible = false
+	big_text_container.visible = true
+	big_text_label.text = "That's it!"
+	await get_tree().create_timer(3.0).timeout
+	big_text_container.visible = false
 
 
 func _on_timer_timeout() -> void:

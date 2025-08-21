@@ -136,7 +136,7 @@ layout_mode = 2
 text = "00:00"
 horizontal_alignment = 1
 
-[node name="GoalLabelContainer" type="PanelContainer" parent="."]
+[node name="BigTextContainer" type="PanelContainer" parent="."]
 unique_name_in_owner = true
 visible = false
 layout_mode = 1
@@ -152,9 +152,10 @@ offset_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Label" type="Label" parent="GoalLabelContainer"]
+[node name="BigTextLabel" type="Label" parent="BigTextContainer"]
+unique_name_in_owner = true
 layout_mode = 2
-text = "GOAL ! ! ! !"
+text = "Placeholder"
 label_settings = SubResource("LabelSettings_nfw3n")
 horizontal_alignment = 1
 
