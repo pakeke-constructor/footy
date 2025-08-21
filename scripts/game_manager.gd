@@ -58,6 +58,9 @@ func score_team(team: Team) -> void:
 		NetworkManager.debug("Broadcasting score event.")
 		score_team.rpc(team)
 
+		if team_scores[Team.BLUE] >= 4 or team_scores[Team.RED] >= 4:
+			stop_match()
+
 
 func get_world() -> World:
 	return get_tree().current_scene as World
