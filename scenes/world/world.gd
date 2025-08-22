@@ -18,6 +18,7 @@ func _ready() -> void:
 	join_button.pressed.connect(_on_join_pressed)
 	NetworkManager.player_connected.connect(_on_player_connected)
 	NetworkManager.player_disconnected.connect(_despawn_player)
+	GameManager.match_stopped.connect(_on_match_stopped)
 
 	if multiplayer.is_server():
 		for id in NetworkManager.players:
@@ -107,3 +108,8 @@ func respawn_ball() -> void:
 	ball.linear_velocity = Vector3.ZERO
 	ball.angular_velocity = Vector3.ZERO
 	NetworkManager.debug("Ball respawned at %s" % ball.global_position)
+
+
+func _on_match_stopped() -> void:
+	for id in ingame_players:
+		_despawn_player(id)
