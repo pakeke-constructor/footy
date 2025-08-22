@@ -19,14 +19,6 @@ func _ready() -> void:
 	NetworkManager.player_connected.connect(_on_player_connected)
 	NetworkManager.player_disconnected.connect(_despawn_player)
 
-	join_button.disabled = GameManager.state != GameManager.GameState.WAITING
-	GameManager.match_started.connect(func() -> void:
-		join_button.disabled = false
-	)
-	GameManager.match_stopped.connect(func() -> void:
-		join_button.disabled = true
-	)
-
 	if multiplayer.is_server():
 		for id in NetworkManager.players:
 			if id != multiplayer.get_unique_id():
@@ -34,6 +26,13 @@ func _ready() -> void:
 		
 		respawn_ball()
 		ball = get_node_or_null("Ball")
+
+
+func _process(delta: float) -> void:
+	if GameManager.state == GameManager.GameState.PLAYING:
+		join_button.disabled = GameManager.match_time > 120.0
+	else:
+		join_button.disabled = false
 
 
 func _on_join_pressed() -> void:
