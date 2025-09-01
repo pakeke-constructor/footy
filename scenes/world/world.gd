@@ -79,7 +79,7 @@ func _spawn_player(id: int) -> void:
 			GameManager.start_match()
 
 
-@rpc("authority", "call_remote", "reliable")
+@rpc("authority", "call_local", "reliable")
 func _despawn_player(id: int) -> void:
 	var player = get_node_or_null("Player_%d" % id)
 	if player:
@@ -111,5 +111,7 @@ func respawn_ball() -> void:
 
 
 func _on_match_stopped() -> void:
-	for id in ingame_players:
-		_despawn_player(id)
+	if multiplayer.is_server():
+		for id in ingame_players:
+			_despawn_player.rpc(id)
+			NetworkManager.debug("Despawning player %d after match end." % id)
