@@ -13,6 +13,8 @@ enum Team {
 	REFEREE
 }
 
+const GOALS_TO_WIN = 1
+
 enum GameState {
 	WAITING,	## Waiting for players
 	PLAYING,	## Match is in progress
@@ -58,7 +60,7 @@ func score_team(team: Team) -> void:
 		NetworkManager.debug("Broadcasting score event.")
 		score_team.rpc(team)
 
-		if team_scores[Team.BLUE] >= 4 or team_scores[Team.RED] >= 4:
+		if team_scores[Team.BLUE] >= GOALS_TO_WIN or team_scores[Team.RED] >= GOALS_TO_WIN:
 			stop_match()
 
 

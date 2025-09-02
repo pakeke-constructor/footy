@@ -112,8 +112,9 @@ func respawn_ball() -> void:
 
 func _on_match_stopped() -> void:
 	if multiplayer.is_server():
-		NetworkManager.debug("Match stopped, despawning the following players: " + str(ingame_players))
-		for id in ingame_players:
+		var buffer = ingame_players.duplicate()
+		NetworkManager.debug("Match stopped, despawning the following players: " + str(buffer))
+		for id in buffer:
 			_despawn_player.rpc(id)
 
 	lobby_screen.visible = true
