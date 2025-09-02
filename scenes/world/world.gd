@@ -18,6 +18,7 @@ func _ready() -> void:
 	join_button.pressed.connect(_on_join_pressed)
 	NetworkManager.player_connected.connect(_on_player_connected)
 	NetworkManager.player_disconnected.connect(_despawn_player)
+	GameManager.match_stopped.connect(_on_match_stopped)
 
 	if multiplayer.is_server():
 		for id in NetworkManager.players:
@@ -78,7 +79,7 @@ func _spawn_player(id: int) -> void:
 			GameManager.start_match()
 
 
-@rpc("authority", "call_remote", "reliable")
+@rpc("authority", "call_local", "reliable")
 func _despawn_player(id: int) -> void:
 	var player = get_node_or_null("Player_%d" % id)
 	if player:
@@ -107,3 +108,13 @@ func respawn_ball() -> void:
 	ball.linear_velocity = Vector3.ZERO
 	ball.angular_velocity = Vector3.ZERO
 	NetworkManager.debug("Ball respawned at %s" % ball.global_position)
+
+
+func _on_match_stopped() -> void:
+	if multiplayer.is_server():
+		var buffer = ingame_players.duplicate()
+		NetworkManager.debug("Match stopped, despawning the following players: " + str(buffer))
+		for id in buffer:
+			_despawn_player.rpc(id)
+
+	lobby_screen.visible = true

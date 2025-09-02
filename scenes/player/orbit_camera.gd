@@ -36,6 +36,7 @@ func _input(event):
 
 func _process(delta):
 	if not target:
+		queue_free() # Behave as if a child of the target
 		return
 	
 	# Calculate desired camera position
