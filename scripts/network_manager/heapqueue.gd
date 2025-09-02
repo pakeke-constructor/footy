@@ -49,7 +49,7 @@ func _heapify_up(index: int):
 		return
 
 	@warning_ignore("integer_division")
-	var parent = (index - 1) / 2
+	var parent: int = (index - 1) / 2
 	if _compare_func.call(_heap[index], _heap[parent]):
 		_swap(index, parent)
 		_heapify_up(parent)
@@ -58,7 +58,7 @@ func _heapify_up(index: int):
 func _heapify_down(index: int):
 	var left = 2 * index + 1
 	var right = 2 * index + 2
-	var target = index
+	var target: int = index
 	
 	if left < _heap.size() and _compare_func.call(_heap[left], _heap[target]):
 		target = left
