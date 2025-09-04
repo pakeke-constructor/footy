@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://cf1gm4p05fgdf"]
+[gd_scene load_steps=7 format=3 uid="uid://cf1gm4p05fgdf"]
 
 [ext_resource type="Script" uid="uid://dxihab7dsjjib" path="res://scenes/player/player.gd" id="1_wr5hl"]
 
@@ -11,11 +11,6 @@ albedo_color = Color(0.801414, 0.752535, 0.229286, 1)
 radius = 0.7
 
 [sub_resource type="BoxMesh" id="BoxMesh_4kuee"]
-
-[sub_resource type="SphereMesh" id="SphereMesh_wr5hl"]
-radius = 1.5
-height = 1.5
-is_hemisphere = true
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_gfjak"]
 radius = 3.0
@@ -40,11 +35,6 @@ mesh = SubResource("BoxMesh_4kuee")
 [node name="Detector" type="Area3D" parent="."]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.54726, 0)
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Detector"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
-visible = false
-mesh = SubResource("SphereMesh_wr5hl")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Detector"]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
