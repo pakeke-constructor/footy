@@ -123,9 +123,10 @@ func _kick(kick_dir: Vector3):
 	if detector.has_overlapping_bodies():
 		var balls := detector.get_overlapping_bodies().filter(
 			func(b):
+				var forward := global_transform.basis.z
 				var to_ball: Vector3 = (b.global_position - self.global_position)
 				to_ball = to_ball.normalized()
-				if kick_dir.normalized().dot(to_ball) < -0.5:
+				if forward.dot(to_ball) < 0.5:
 					return false
 				return b is Ball and b != self
 		) as Array[Node3D]
