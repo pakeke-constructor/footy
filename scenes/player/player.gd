@@ -10,6 +10,7 @@ var gravity := ProjectSettings.get_setting("physics/3d/default_gravity") as floa
 var player_id: int
 var camera: OrbitCamera
 @onready var detector: Area3D = %Detector
+@onready var animation_player: AnimationPlayer = %AnimationPlayer
 
 var direction := Vector2(0,0)
 
@@ -137,6 +138,7 @@ func _kick(kick_dir: Vector3):
 			var ball := balls[0] as Ball
 			ball.apply_impulse(kick_dir.normalized() * kick_strength, Vector3.ZERO)
 			ParticlesManager.kick(ball.global_position)
+			animation_player.play("swing")
 
 
 
