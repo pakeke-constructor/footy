@@ -10,6 +10,7 @@ var gravity := ProjectSettings.get_setting("physics/3d/default_gravity") as floa
 var player_id: int
 var camera: OrbitCamera
 @onready var detector: Area3D = %Detector
+@onready var animation_player: AnimationPlayer = %AnimationPlayer
 
 var direction := Vector2(0,0)
 
@@ -113,6 +114,8 @@ func _input(event):
 	if event is InputEventMouseButton:
 		if event.button_index == 1 && event.pressed:
 			_kick.rpc(-camera.global_transform.basis.z * kick_strength)
+			# TODO: Only play animation if kick actually hits a ball?
+			animation_player.play("swing")
 
 
 @rpc("authority", "call_remote", "reliable")
