@@ -90,7 +90,7 @@ func reshuffle_teams() -> void:
 	if not multiplayer.is_server():
 		return
 	
-	var all_players := get_world().ingame_players
+	var all_players := get_world().get_players()
 	all_players.shuffle()
 	
 	var total_players = all_players.size()

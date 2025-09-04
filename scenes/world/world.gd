@@ -9,8 +9,8 @@ extends Node3D
 @onready var game_hud: Control = %GameHud
 @onready var lobby_screen: Control = %LobbyScreen
 @onready var join_button: Button = %JoinButton
+@onready var players: Node = %Players
 
-var ingame_players: Array[int] = []
 var ball: Ball
 
 
@@ -45,10 +45,17 @@ func _on_join_pressed() -> void:
 
 func _on_player_connected(id: int) -> void:
 	if multiplayer.is_server():
-		for pid in ingame_players:
+		for pid in get_players():
 			if pid != id:
 				NetworkManager.debug("Spawning player %d for new player %d" % [pid, id])
 				_spawn_player.rpc_id(id, pid)
+
+
+func get_players() -> Array[int]:
+	var player_ids: Array[int] = []
+	for node in players.get_children():
+		player_ids.append(int(node.name))
+	return player_ids
 
 
 @rpc("any_peer", "call_remote", "reliable")
@@ -67,24 +74,22 @@ func _spawn_player(id: int) -> void:
 		return
 
 	var player = player_scene.instantiate() as Player
-	player.name = "Player_%d" % id
+	player.name = str(id)
 	player.set_multiplayer_authority(id)
-	add_child(player)
-	ingame_players.append(id)
+	players.add_child(player)
 	NetworkManager.debug("Spawning player %s" % player.name)
 
 	if multiplayer.is_server():
 		_spawn_player.rpc(id)
-		if ingame_players.size() >= 2:
+		if players.get_child_count() >= 2:
 			GameManager.start_match()
 
 
 @rpc("authority", "call_local", "reliable")
 func _despawn_player(id: int) -> void:
-	var player = get_node_or_null("Player_%d" % id)
+	var player = players.get_node_or_null(str(id))
 	if player:
 		player.queue_free()
-		ingame_players.erase(id)
 		NetworkManager.debug("Despawning player %s" % player.name)
 
 
@@ -112,9 +117,8 @@ func respawn_ball() -> void:
 
 func _on_match_stopped() -> void:
 	if multiplayer.is_server():
-		var buffer = ingame_players.duplicate()
-		NetworkManager.debug("Match stopped, despawning the following players: " + str(buffer))
-		for id in buffer:
-			_despawn_player.rpc(id)
+		NetworkManager.debug("Match stopped, despawning the following players: " + str(get_players()))
+		for player in get_players():
+			_despawn_player.rpc(player)
 
 	lobby_screen.visible = true
