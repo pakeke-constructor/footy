@@ -6,7 +6,7 @@ extends Node3D
 @export var ball_scene: PackedScene
 
 @onready var overview_camera: Camera3D = %OverviewCamera
-@onready var game_hud: Control = %GameHud
+@onready var game_hud: GameHUD = %GameHud
 @onready var lobby_screen: Control = %LobbyScreen
 @onready var join_button: Button = %JoinButton
 @onready var players: Node = %Players
@@ -79,9 +79,13 @@ func _spawn_player(id: int) -> void:
 	players.add_child(player)
 	NetworkManager.debug("Spawning player %s" % player.name)
 
+	if players.get_child_count() >= 2:
+		game_hud.announce("Starting in 10 seconds!")
+
 	if multiplayer.is_server():
 		_spawn_player.rpc(id)
 		if players.get_child_count() >= 2:
+			await get_tree().create_timer(10.0).timeout
 			GameManager.start_match()
 
 

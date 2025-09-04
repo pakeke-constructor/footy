@@ -1,3 +1,4 @@
+class_name GameHUD
 extends Control
 
 
@@ -24,30 +25,28 @@ func _process(_delta: float) -> void:
 	player_list.visible = Input.is_key_pressed(KEY_TAB)
 
 
+func announce(message: String) -> void:
+	big_text_container.visible = true
+	big_text_label.text = message
+	await get_tree().create_timer(3.0).timeout
+	big_text_container.visible = false
+
+
 func _on_team_scored(_team: GameManager.Team) -> void:
 	score_label_blue.text = str(GameManager.team_scores[GameManager.Team.BLUE])
 	score_label_red.text = str(GameManager.team_scores[GameManager.Team.RED])
 
-	big_text_container.visible = true
-	big_text_label.text = "Goal!!!"
-	await get_tree().create_timer(3.0).timeout
-	big_text_container.visible = false
+	announce("Goal!!!!")
 
 
 func _on_match_started() -> void:
 	score_view_container.visible = true
-	big_text_container.visible = true
-	big_text_label.text = "Start!"
-	await get_tree().create_timer(3.0).timeout
-	big_text_container.visible = false
+	announce("Start!")
 
 
 func _on_match_stopped() -> void:
 	score_view_container.visible = false
-	big_text_container.visible = true
-	big_text_label.text = "That's it!"
-	await get_tree().create_timer(3.0).timeout
-	big_text_container.visible = false
+	announce("That's it!")
 
 
 func _on_timer_timeout() -> void:
